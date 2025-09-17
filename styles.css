@@ -1,0 +1,68 @@
+/* General body styling */
+body {
+    background-color: #141414;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card styling for login and profiles */
+.card {
+    background-color: #222;
+    border-radius: 8px;
+}
+
+/* Input styling */
+input.form-control, input.profile-name-input {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-bottom: 2px solid #555;
+    border-radius: 0;
+}
+
+input.form-control:focus, input.profile-name-input:focus {
+    background-color: #333;
+    color: #fff;
+    border-bottom: 2px solid #e50914;
+    box-shadow: none;
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: #e50914;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #f40612;
+}
+
+/* Navbar styling */
+.navbar {
+    background-color: #141414 !important;
+}
+
+.navbar-brand, .nav-link {
+    color: #fff !important;
+}
+
+.nav-link.active {
+    font-weight: bold;
+    border-bottom: 2px solid #e50914;
+}
+
+/* Profile images */
+.profile-img {
+    border: 3px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.profile-img:hover {
+    border-color: #e50914;
+}
+
+/* Container padding */
+.container {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}

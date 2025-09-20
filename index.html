@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Login Page</title>
-    <!-- Bootstrap CSS CDN -->
-    <link rel="stylesheet" href="styles.css" />
+    <title>Login - Netflix</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="container vh-100 d-flex justify-content-center align-items-center">
-        <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
-            <h2 class="mb-4 text-center">Login</h2>
-            <form>
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" id="username" class="form-control" placeholder="Enter username" />
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" class="form-control" placeholder="Enter password" />
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
-            </form>
-        </div>
+    <div class="login-background"></div>
+    <div class="login-container">
+        <form class="login-form">
+            <h1>כניסה לחשבון</h1>
+            <input type="text" placeholder="אימייל או מספר נייד" />
+            <input type="password" placeholder="סיסמה" />
+            <button type="submit">כניסה לחשבון</button>
+            <button type="button" class="secondary-button">כניסה עם קוד</button>
+            <a href="#">שכחת את הסיסמה?</a>
+            <div>
+                <input type="checkbox" id="remember" />
+                <label for="remember">זכור אותי</label>
+            </div>
+            <p>עוד לא ב-Netflix? <a href="#">זה הזמן להירשם.</a></p>
+        </form>
     </div>
 </body>
 </html>

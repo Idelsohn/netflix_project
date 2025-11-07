@@ -24,13 +24,8 @@ class AuthManager {
         const loginForm = document.querySelector('.login-form');
         if (!loginForm) return;
 
-        const emailInput = loginForm.querySelector('input[type="text"]');
-        const passwordInput = loginForm.querySelector('input[type="password"]');
-        const submitButton = loginForm.querySelector('button[type="submit"]');
-
-        // Add IDs for easier reference
-        emailInput.id = 'email';
-        passwordInput.id = 'password';
+        const emailInput = loginForm.querySelector('input[id="login-email"]');
+        const passwordInput = loginForm.querySelector('input[id="login-password"]');
 
         // Real-time validation
         emailInput.addEventListener('blur', () => {
@@ -43,7 +38,7 @@ class AuthManager {
 
         // Form submission
         loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+            e.preventDefault(); // Prevent default form submission
             this.handleLogin(emailInput, passwordInput);
         });
 
@@ -59,30 +54,49 @@ class AuthManager {
             return;
         }
 
-        // Add click handlers to profile cards
-        const profileCards = document.querySelectorAll('.profile-card');
-        profileCards.forEach((card, index) => {
-            const profile = profiles[index];
-            card.setAttribute('data-profile-id', profile.id);
-            
+        this.createCardList();
+
+        const allProfilesCards = document.querySelector('.profile-list').querySelectorAll('.profile-card');
+        allProfilesCards.forEach((card) => {
             card.addEventListener('click', () => {
-                this.selectProfile(profile.id, profile.name);
+                this.selectProfile(
+                    card.getAttribute("data-profile-id"), 
+                    card.querySelector('.profile-name').textContent
+                );
             });
 
-            // Add hover effect
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'scale(1.05)';
-                card.style.transition = 'transform 0.3s ease';
-            });
+            // // Add hover effect
+            // card.addEventListener('mouseenter', () => {
+            //     card.style.transform = 'scale(1.05)';
+            //     card.style.transition = 'transform 0.3s ease';
+            // });
 
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'scale(1)';
-            });
+            // card.addEventListener('mouseleave', () => {
+            //     card.style.transform = 'scale(1)';
+            // });
+        });
+    }
+
+    createCardList() {
+        // TODO: Get the profiles data from MongoDB instead of file
+        profiles.forEach((profile) => {
+            let card = document.createElement('div');
+            card.className = 'profile-card';
+            card.setAttribute('data-profile-id', profile.id);
+            const img = document.createElement('img');
+            img.src = profile.image;
+            img.alt = profile.name;
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'profile-name';
+            nameDiv.textContent = profile.name;
+            card.appendChild(img);
+            card.appendChild(nameDiv);
+            document.querySelector('.profile-list').appendChild(card);
         });
     }
 
     validateEmailField(emailInput) {
-        const email = emailInput.value.trim();
+        const email = emailInput.value.trim(); // Trim whitespace
         this.clearError(emailInput);
 
         if (!email) {
@@ -91,7 +105,7 @@ class AuthManager {
         }
 
         // Simple email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         if (!emailRegex.test(email)) {
             this.showError(emailInput, 'Please enter a valid email format');
             return false;
@@ -123,7 +137,7 @@ class AuthManager {
         
         // Create error element
         const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
+        errorDiv.className = 'error-message-' + inputElement.id;
         errorDiv.textContent = message;
         
         // Insert after the input
@@ -131,14 +145,14 @@ class AuthManager {
     }
 
     clearError(inputElement) {
-        const existingError = inputElement.parentNode.querySelector('.error-message');
+        const existingError = inputElement.parentNode.querySelector('.error-message-' + inputElement.id);
         if (existingError) {
             existingError.remove();
         }
     }
 
     clearAllErrors(form) {
-        const errors = form.querySelectorAll('.error-message');
+        const errors = form.querySelectorAll('[class^="error-message"]');
         errors.forEach(error => error.remove());
     }
 
@@ -153,7 +167,7 @@ class AuthManager {
         
         // Auto remove after 3 seconds
         setTimeout(() => {
-            if (notification.parentNode) {
+            if (notification.parentNode) { // Check if still in DOM
                 notification.parentNode.removeChild(notification);
             }
         }, 3000);
@@ -164,7 +178,6 @@ class AuthManager {
         this.clearAllErrors(document.querySelector('.login-form'));
 
         const email = emailInput.value.trim();
-        const password = passwordInput.value;
 
         // Validate both fields
         const isEmailValid = this.validateEmailField(emailInput);
@@ -173,6 +186,8 @@ class AuthManager {
         if (!isEmailValid || !isPasswordValid) {
             return;
         }
+
+        // TODO: Verify credentials with a backend
 
         try {
             // Save authentication state to localStorage

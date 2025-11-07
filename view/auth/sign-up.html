@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign Up - Netflix</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+    <div class="sign-up-background"></div>
+    <div class="sign-up-container">
+        <form class="sign-up-form">
+            <h1>Sign Up</h1>
+            <input type="text" id="sign-up-username" placeholder="Username" />
+            <input type="text" id="sign-up-email" placeholder="Email" />
+            <div class="password-container">
+                <input type="password" id="sign-up-password" placeholder="Password" />
+                <button type="button" id="password-togglePwd">Show</button>
+            </div>
+            <div class="password-container">
+                <input type="password" id="sign-up-confirm-password" placeholder="Confirm Password" />
+                <button type="button" id="confirm-password-togglePwd">Show</button>
+            </div>
+            <div style="margin-top: 10px;">
+                <input type="checkbox" id="agree-to-terms" />
+                <label for="agree-to-terms" style="font-size: 14px;">I agree to the Terms of Use and Privacy Policy</label>
+            </div>
+            <button type="submit">Sign Up</button>
+            <p>Already have an account? <a href="login.html">Sign in here.</a></p>
+        </form>
+    </div>
+
+    <!-- JavaScript files -->
+    <script src="../../models/data.js"></script>
+    <script src="../utils.js"></script>
+    <script type="module" src="auth.js"></script>
+</body>
+</html>

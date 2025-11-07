@@ -9,7 +9,7 @@ const contentCatalog = [
         genre: "Sci-Fi", // Primary genre for backward compatibility
         likes: 1250,
         type: "series",
-        image: "images/titles_images/stranger-things-586a302a5290e.jpg"
+        image: "../../images/titles_images/stranger-things-586a302a5290e.jpg"
     },
     {
         id: 2,
@@ -19,7 +19,7 @@ const contentCatalog = [
         genre: "Drama",
         likes: 980,
         type: "series",
-        image: "images/titles_images/the-crown-581d612a055cd.jpg"
+        image: "../../images/titles_images/the-crown-581d612a055cd.jpg"
     },
     {
         id: 3,
@@ -29,7 +29,7 @@ const contentCatalog = [
         genre: "Sci-Fi",
         likes: 1150,
         type: "series",
-        image: "images/titles_images/black-mirror-589ef336268de.jpg"
+        image: "../../images/titles_images/black-mirror-589ef336268de.jpg"
     },
     {
         id: 4,
@@ -39,7 +39,7 @@ const contentCatalog = [
         genre: "Crime",
         likes: 850,
         type: "movie",
-        image: "images/titles_images/the-irishman-5de1fdc43999d.jpg"
+        image: "../../images/titles_images/the-irishman-5de1fdc43999d.jpg"
     },
     {
         id: 5,
@@ -49,7 +49,7 @@ const contentCatalog = [
         genre: "Drama",
         likes: 720,
         type: "movie",
-        image: "images/titles_images/roma-5c1591a4551ed.jpg"
+        image: "../../images/titles_images/roma-5c1591a4551ed.jpg"
     },
     {
         id: 6,
@@ -59,7 +59,7 @@ const contentCatalog = [
         genre: "Crime",
         likes: 1850,
         type: "series",
-        image: "images/titles_images/la-casa-de-papel-5bdb348db30e4.jpg"
+        image: "../../images/titles_images/la-casa-de-papel-5bdb348db30e4.jpg"
     },
     {
         id: 7,
@@ -69,7 +69,7 @@ const contentCatalog = [
         genre: "Horror",
         likes: 950,
         type: "movie",
-        image: "images/titles_images/bird-box-5c2a740452911.jpg"
+        image: "../../images/titles_images/bird-box-5c2a740452911.jpg"
     },
     {
         id: 8,
@@ -79,7 +79,7 @@ const contentCatalog = [
         genre: "Comedy",
         likes: 1100,
         type: "series",
-        image: "images/titles_images/orange-is-the-new-black-51e06e1e5eb29.jpg"
+        image: "../../images/titles_images/orange-is-the-new-black-51e06e1e5eb29.jpg"
     },
     {
         id: 9,
@@ -89,7 +89,7 @@ const contentCatalog = [
         genre: "Thriller",
         likes: 780,
         type: "movie",
-        image: "images/titles_images/the-platform-602caa8f54888.jpg"
+        image: "../../images/titles_images/the-platform-602caa8f54888.jpg"
     },
     {
         id: 10,
@@ -99,7 +99,7 @@ const contentCatalog = [
         genre: "Crime",
         likes: 1320,
         type: "series",
-        image: "images/titles_images/ozark-59758728cf49f.jpg"
+        image: "../../images/titles_images/ozark-59758728cf49f.jpg"
     },
     {
         id: 11,
@@ -109,7 +109,7 @@ const contentCatalog = [
         genre: "Fantasy",
         likes: 1650,
         type: "series",
-        image: "images/titles_images/the-witcher-5d3339ee443f6.jpg"
+        image: "../../images/titles_images/the-witcher-5d3339ee443f6.jpg"
     },
     {
         id: 12,
@@ -119,7 +119,7 @@ const contentCatalog = [
         genre: "Thriller",
         likes: 2100,
         type: "series",
-        image: "images/titles_images/squid-game-6185b743943c8.jpg"
+        image: "../../images/titles_images/squid-game-6185b743943c8.jpg"
     },
     {
         id: 13,
@@ -129,7 +129,7 @@ const contentCatalog = [
         genre: "Crime",
         likes: 1890,
         type: "series",
-        image: "images/titles_images/breaking-bad-4f2790a25f183.jpg"
+        image: "../../images/titles_images/breaking-bad-4f2790a25f183.jpg"
     },
     {
         id: 14,
@@ -139,7 +139,7 @@ const contentCatalog = [
         genre: "Drama",
         likes: 1450,
         type: "series",
-        image: "images/titles_images/the-queens-gambit-5fba235c776f0.jpg"
+        image: "../../images/titles_images/the-queens-gambit-5fba235c776f0.jpg"
     },
     {
         id: 15,
@@ -149,7 +149,7 @@ const contentCatalog = [
         genre: "Crime",
         likes: 1280,
         type: "series",
-        image: "images/titles_images/narcos-55d7e8d99c35c.jpg"
+        image: "../../images/titles_images/narcos-55d7e8d99c35c.jpg"
     },
     {
         id: 16,
@@ -159,7 +159,7 @@ const contentCatalog = [
         genre: "Comedy",
         likes: 1750,
         type: "series",
-        image: "images/titles_images/wednesday-637e6cd0d2db4.jpg"
+        image: "../../images/titles_images/wednesday-637e6cd0d2db4.jpg"
     },
     {
         id: 17,
@@ -169,7 +169,7 @@ const contentCatalog = [
         genre: "Drama",
         likes: 1200,
         type: "series",
-        image: "images/titles_images/house-of-cards-2013-510ddbe01f963.jpg"
+        image: "../../images/titles_images/house-of-cards-2013-510ddbe01f963.jpg"
     },
     {
         id: 18,
@@ -179,7 +179,7 @@ const contentCatalog = [
         genre: "Sci-Fi",
         likes: 1380,
         type: "series",
-        image: "images/titles_images/dark-5a2a7712af6d1.jpg"
+        image: "../../images/titles_images/dark-5a2a7712af6d1.jpg"
     },
     {
         id: 19,
@@ -189,7 +189,7 @@ const contentCatalog = [
         genre: "Romance",
         likes: 1520,
         type: "series",
-        image: "images/titles_images/bridgerton-600594f2a06c2.jpg"
+        image: "../../images/titles_images/bridgerton-600594f2a06c2.jpg"
     },
     {
         id: 20,
@@ -199,7 +199,7 @@ const contentCatalog = [
         genre: "Crime",
         likes: 1180,
         type: "series",
-        image: "images/titles_images/lupin-60c593cab8020.jpg"
+        image: "../../images/titles_images/lupin-60c593cab8020.jpg"
     },
     {
         id: 21,
@@ -209,7 +209,7 @@ const contentCatalog = [
         genre: "Action",
         likes: 890,
         type: "movie",
-        image: "images/titles_images/red-notice-6178576c3367a.jpg"
+        image: "../../images/titles_images/red-notice-6178576c3367a.jpg"
     },
     {
         id: 22,
@@ -219,7 +219,7 @@ const contentCatalog = [
         genre: "Comedy",
         likes: 1050,
         type: "movie",
-        image: "images/titles_images/dont-look-up-61cb662a7f558.jpg"
+        image: "../../images/titles_images/dont-look-up-61cb662a7f558.jpg"
     },
     {
         id: 23,
@@ -229,7 +229,7 @@ const contentCatalog = [
         genre: "Sci-Fi",
         likes: 920,
         type: "movie",
-        image: "images/titles_images/the-adam-project-622e2cf71cb45.jpg"
+        image: "../../images/titles_images/the-adam-project-622e2cf71cb45.jpg"
     },
     {
         id: 24,
@@ -239,7 +239,7 @@ const contentCatalog = [
         genre: "Action",
         likes: 1150,
         type: "movie",
-        image: "images/titles_images/extraction-5e954cf613701.jpg"
+        image: "../../images/titles_images/extraction-5e954cf613701.jpg"
     },
     {
         id: 25,
@@ -249,7 +249,7 @@ const contentCatalog = [
         genre: "Action",
         likes: 780,
         type: "movie",
-        image: "images/titles_images/the-gray-man-62dc299ea5d03.jpg"
+        image: "../../images/titles_images/the-gray-man-62dc299ea5d03.jpg"
     },
     {
         id: 26,
@@ -259,7 +259,7 @@ const contentCatalog = [
         genre: "Mystery",
         likes: 1320,
         type: "movie",
-        image: "images/titles_images/glass-onion-a-knives-out-mystery-63afda3632fb7.jpg"
+        image: "../../images/titles_images/glass-onion-a-knives-out-mystery-63afda3632fb7.jpg"
     },
     {
         id: 27,
@@ -269,7 +269,7 @@ const contentCatalog = [
         genre: "Action",
         likes: 680,
         type: "movie",
-        image: "images/titles_images/6-underground-5dd0c1532ca09.jpg"
+        image: "../../images/titles_images/6-underground-5dd0c1532ca09.jpg"
     },
     {
         id: 28,
@@ -279,7 +279,7 @@ const contentCatalog = [
         genre: "Mystery",
         likes: 1080,
         type: "movie",
-        image: "images/titles_images/enola-holmes-mysteries-5f4b712088383.jpg"
+        image: "../../images/titles_images/enola-holmes-mysteries-5f4b712088383.jpg"
     },
     {
         id: 29,
@@ -289,7 +289,7 @@ const contentCatalog = [
         genre: "Romance",
         likes: 650,
         type: "movie",
-        image: "images/titles_images/the-kissing-booth-5f28e8199b968.jpg"
+        image: "../../images/titles_images/the-kissing-booth-5f28e8199b968.jpg"
     },
     {
         id: 30,
@@ -299,7 +299,7 @@ const contentCatalog = [
         genre: "Action",
         likes: 750,
         type: "movie",
-        image: "images/titles_images/triple-frontier-5c8ded7425b71.jpg"
+        image: "../../images/titles_images/triple-frontier-5c8ded7425b71.jpg"
     }
 ];
 
@@ -308,26 +308,26 @@ const profiles = [
     { 
         id: 1, 
         name: "Yahav", 
-        image: "images/profile_pictures/profile picture 1.jfif"
+        image: "../../images/profile_pictures/profile_picture_1.jfif"
     },
     { 
         id: 2, 
         name: "Nadav", 
-        image: "images/profile_pictures/profile picture 2.jfif"
+        image: "../../images/profile_pictures/profile_picture_2.jfif"
     },
     { 
         id: 3, 
         name: "Roe", 
-        image: "images/profile_pictures/profile picture 3.jfif"
+        image: "../../images/profile_pictures/profile_picture_3.jfif"
     },
     { 
         id: 4, 
         name: "Amit", 
-        image: "images/profile_pictures/profile picture 4.jfif"
+        image: "../../images/profile_pictures/profile_picture_4.jfif"
     },
     { 
         id: 5, 
         name: "Or", 
-        image: "images/profile_pictures/profile picture 5.jfif"
+        image: "../../images/profile_pictures/profile_picture_5.jfif"
     }
 ];

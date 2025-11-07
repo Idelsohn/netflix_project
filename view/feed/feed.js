@@ -9,8 +9,8 @@ class FeedManager {
     }
 
     init() {
-        // Only initialize if we're on the feed page (menu.html)
-        if (!window.location.pathname.includes('menu.html')) {
+        // Only initialize if we're on the feed page (feed.html)
+        if (!window.location.pathname.includes('feed.html')) {
             return;
         }
 
@@ -184,7 +184,7 @@ class FeedManager {
             });
             
             // Redirect to profiles page to select a new profile
-            window.location.href = 'profiles.html';
+            window.location.href = '../auth/profiles.html';
         });
 
         // Logout functionality

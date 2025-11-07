@@ -2,23 +2,23 @@
 
 class StorageManager {
     // Authentication state management
-    static setAuthState(isLoggedIn, userEmail = null) {
+    static setAuthState(isLoggedIn, username = null) {
         localStorage.setItem('isLoggedIn', isLoggedIn.toString());
-        if (userEmail) {
-            localStorage.setItem('userEmail', userEmail);
+        if (username) {
+            localStorage.setItem('username', username);
         }
     }
 
     static getAuthState() {
         return {
             isLoggedIn: localStorage.getItem('isLoggedIn') === 'true',
-            userEmail: localStorage.getItem('userEmail')
+            username: localStorage.getItem('username')
         };
     }
 
     static clearAuthState() {
         localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('userEmail');
+        localStorage.removeItem('username');
     }
 
     // Profile management

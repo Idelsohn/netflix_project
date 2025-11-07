@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Netflix</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+    <div class="login-background"></div>
+    <div class="login-container">
+        <form class="login-form">
+            <h1>Sign In</h1>
+            <input type="text" id="login-username" placeholder="Username" />
+            <div class="password-container">
+                <input type="password" id="login-password" placeholder="Password" />
+                <button type="button" id="password-togglePwd">Show</button>
+            </div>
+            <button type="submit">Sign In</button>
+            <button type="button" class="secondary-button">Use a sign-in code</button>
+            <a href="#">Forgot password?</a>
+            <div>
+                <input type="checkbox" id="remember" />
+                <label for="remember">Remember me</label>
+            </div>
+            <p>New to Netflix? <a href="sign-up.html">Sign up now.</a></p>
+        </form>
+    </div>
+
+    <!-- JavaScript files -->
+    <script src="../../models/data.js"></script>
+    <script src="../utils.js"></script>
+    <script type="module" src="auth.js"></script>
+
+</body>
+
+</html>

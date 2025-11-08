@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player - Netflix</title>
+    <link rel="stylesheet" href="video-player.css">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading video...</div>
+    </div>
+
+    <!-- Continue Watching Modal -->
+    <div id="continueModal" class="continue-modal hidden">
+        <div class="modal-content">
+            <h3>Continue Watching?</h3>
+            <p>You stopped watching at <span id="continueTime"></span></p>
+            <div class="modal-buttons">
+                <button id="continueBtn" class="continue-btn">Continue</button>
+                <button id="restartBtn" class="restart-btn">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Container -->
+    <div id="videoPlayerContainer" class="video-player-container">
+        <!-- Video Element -->
+        <video id="mainVideo" class="video-element" preload="metadata">
+            Your browser does not support the video tag.
+        </video>
+
+        <!-- Video Overlay Controls -->
+        <div id="videoOverlay" class="video-overlay">
+            <!-- Center Play Button -->
+            <div id="centerPlayBtn" class="center-play-button">
+                <button class="play-button-large">▶</button>
+            </div>
+
+            <!-- Main Controls Bar -->
+            <div id="controlsBar" class="controls-bar">
+                <!-- Left Controls -->
+                <div class="controls-left">
+                    <button id="playPauseBtn" class="control-btn play-pause-btn">
+                        <span class="play-icon">▶</span>
+                        <span class="pause-icon hidden">⏸</span>
+                    </button>
+                    <button id="backwardBtn" class="control-btn skip-btn">
+                        <span>⏪ 10s</span>
+                    </button>
+                    <button id="forwardBtn" class="control-btn skip-btn">
+                        <span>10s ⏩</span>
+                    </button>
+                    <div class="volume-control">
+                        <button id="muteBtn" class="control-btn volume-btn">
+                            <span class="volume-on">🔊</span>
+                            <span class="volume-off hidden">🔇</span>
+                        </button>
+                        <div class="volume-slider-container">
+                            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="50">
+                        </div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">0:00</span>
+                        <span class="time-separator">/</span>
+                        <span id="totalTime">0:00</span>
+                    </div>
+                </div>
+
+                <!-- Center Timeline -->
+                <div class="controls-center">
+                    <div class="timeline-container">
+                        <div class="timeline-track">
+                            <div id="progressBar" class="progress-bar"></div>
+                            <div id="bufferBar" class="buffer-bar"></div>
+                            <input type="range" id="timeline" class="timeline-slider" min="0" max="100" value="0">
+                            <div id="timelineThumb" class="timeline-thumb"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Controls -->
+                <div class="controls-right">
+                    <div class="playback-speed">
+                        <button id="speedBtn" class="control-btn speed-btn">1x</button>
+                        <div id="speedMenu" class="speed-menu hidden">
+                            <div class="speed-option" data-speed="0.5">0.5x</div>
+                            <div class="speed-option" data-speed="0.75">0.75x</div>
+                            <div class="speed-option active" data-speed="1">1x</div>
+                            <div class="speed-option" data-speed="1.25">1.25x</div>
+                            <div class="speed-option" data-speed="1.5">1.5x</div>
+                            <div class="speed-option" data-speed="2">2x</div>
+                        </div>
+                    </div>
+                    <button id="pictureInPictureBtn" class="control-btn pip-btn">📺</button>
+                    <button id="episodeListBtn" class="control-btn episodes-btn">📋</button>
+                    <button id="nextEpisodeBtn" class="control-btn next-episode-btn">Next Episode</button>
+                    <button id="fullscreenBtn" class="control-btn fullscreen-btn">⛶</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Episode Drawer -->
+        <div id="episodeDrawer" class="episode-drawer hidden">
+            <div class="drawer-header">
+                <h3>Episodes</h3>
+                <button id="closeDrawer" class="close-drawer-btn">×</button>
+            </div>
+            <div id="episodeList" class="episode-list">
+                <!-- Episodes will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message hidden">
+            <div class="error-content">
+                <h3>Video Error</h3>
+                <p id="errorText">Failed to load video</p>
+                <button id="retryBtn" class="retry-btn">Try Again</button>
+                <button id="backToFeedBtn" class="back-btn">Back to Browse</button>
+            </div>
+        </div>
+
+        <!-- Buffering Indicator -->
+        <div id="bufferingIndicator" class="buffering-indicator hidden">
+            <div class="spinner"></div>
+            <div class="buffering-text">Buffering...</div>
+        </div>
+    </div>
+
+    <!-- Back to Feed Button -->
+    <button id="backButton" class="back-to-feed-button">
+        <span>←</span> Back to Browse
+    </button>
+
+    <!-- JavaScript Files -->
+    <script src="../utils.js"></script>
+    <script src="../auth/auth.js"></script>
+    <script src="video-controls.js"></script>
+    <script src="episode-manager.js"></script>
+    <script src="progress-sync.js"></script>
+    <script src="video-player.js"></script>
+</body>
+</html>

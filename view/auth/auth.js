@@ -95,27 +95,6 @@ class AuthManager {
         });
     }
 
-    initProfilesPage() {
-        // Check if user is authenticated
-        const authState = StorageManager.getAuthState();
-        if (!authState.isLoggedIn) {
-            DOMUtils.redirectTo('login.html');
-            return;
-        }
-
-        this.createCardList();
-
-        const allProfilesCards = document.querySelector('.profile-list').querySelectorAll('.profile-card');
-        allProfilesCards.forEach((card) => {
-            card.addEventListener('click', () => {
-                this.selectProfile(
-                    card.getAttribute("data-profile-id"), 
-                    card.querySelector('.profile-name').textContent
-                );
-            });
-        });
-    }
-
     setupLoginToggle() {
         const pwd = document.getElementById('login-password');
         const passwordToggle = document.getElementById('password-togglePwd');
@@ -154,6 +133,29 @@ class AuthManager {
                 confirmPwd.type = 'password'; 
                 confirmPasswordToggle.textContent = 'Show';
             }
+        });
+    }
+
+    async initProfilesPage() {
+        // Check if user is authenticated
+        const hasActiveSession = await this.apiUsage.hasActiveSession();
+        if (!hasActiveSession.success) {
+            // Redirect to login page if not authenticated
+            this.logout();
+            return;
+        }
+        
+        // profiles = await this.apiUsage.getCurrentUser();
+        this.createCardList();
+
+        const allProfilesCards = document.querySelector('.profile-list').querySelectorAll('.profile-card');
+        allProfilesCards.forEach((card) => {
+            card.addEventListener('click', () => {
+                this.selectProfile(
+                    card.getAttribute("data-profile-id"), 
+                    card.querySelector('.profile-name').textContent
+                );
+            });
         });
     }
 
@@ -410,9 +412,11 @@ class AuthManager {
         }
     }
 
-    checkAuthState() {
+    async checkAuthState() {
         const currentPage = window.location.pathname;
-        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        // Check if user is authenticated
+        const hasActiveSession = await this.apiUsage.hasActiveSession();
+        const isLoggedIn = hasActiveSession.success;
         
         console.log('Current page:', currentPage);
         console.log('Is logged in:', isLoggedIn);
@@ -448,10 +452,10 @@ class AuthManager {
     logout() {
         // Clear ALL localStorage data as required by exercise instructions
         localStorage.clear();
-        
-        // Show logout message
-        this.showNotification('Successfully logged out', 'info');
-        
+
+        // Clear the cookies by calling the logout API
+        this.apiUsage.logoutUser();
+
         // Redirect to login
         setTimeout(() => {
             window.location.href = '../auth/login.html';

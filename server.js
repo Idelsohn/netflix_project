@@ -2,9 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const cookieParser = require('cookie-parser');
 const userRoutes = require("./routes/api/user_routes.js");
-const profileRoutes = require("./routes/api/profile_routes.js");
-const contentCatalogRoutes = require("./routes/api/content_catalog_routes.js");
+// const profileRoutes = require("./routes/api/profile_routes.js");
+// const contentCatalogRoutes = require("./routes/api/content_catalog_routes.js");
 
 dotenv.config(); // load environment variables
 const app = express(); // create express app
@@ -12,7 +13,7 @@ const app = express(); // create express app
 // ENABLE CORS (before routes)
 app.use(
   cors({
-    origin: "http://127.0.0.1:5500", // allow your frontend
+    origin: "http://localhost:5500", // allow your frontend
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
@@ -20,6 +21,7 @@ app.use(
 
 // middleware
 app.use(express.json()); // middleware to parse JSON bodies
+app.use(cookieParser()); // enables req.cookies
 
 // connect to MongoDB
 mongoose.connect(

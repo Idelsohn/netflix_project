@@ -726,7 +726,7 @@ html {
 .content-image img {
     width: 100%;
     height: 100%;
-    object-fit: fill; /* This will stretch the image to fill the container completely */
+    object-fit: cover; /* This will cover the container while maintaining aspect ratio */
     object-position: center; /* Center the image within the container */
     transition: transform 0.3s ease;
 }
@@ -979,7 +979,7 @@ html {
 .content-card-netflix .content-image img {
     width: 100%;
     height: 100%;
-    object-fit: fill; /* This will stretch the image to fill the container completely */
+    object-fit: cover; /* This will cover the container while maintaining aspect ratio */
     object-position: center; /* Center the image within the container */
     transition: transform 0.3s ease;
 }
@@ -1207,32 +1207,34 @@ html {
 
 .search-results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
     row-gap: 30px;
     padding: 20px 40px;
     max-width: none;
     margin: 0;
+    justify-content: space-between; /* Distribute cards evenly across the page */
 }
 
-/* Search results cards should use flexible dimensions to fill the grid */
+/* Search results cards should maintain fixed width but allow slight flexibility */
 .search-results-grid .content-card-netflix {
-    width: 100% !important; /* Fill the grid cell completely */
-    min-width: 200px !important; /* Minimum width for readability */
-    max-width: none !important; /* Allow growing to fill space */
-    flex: none !important; /* Override any flex properties */
+    width: 100% !important; /* Fill the grid cell */
+    min-width: 230px !important; /* Smaller minimum width for 5 per row */
+    max-width: 280px !important; /* Smaller maximum width */
+    flex: none !important;
+    margin: 0 auto; /* Center card in its grid cell */
 }
 
 .search-results-grid .content-card-netflix .content-image {
-    height: 160px !important; /* Keep consistent height */
+    height: 190px !important; /* Proportional height reduction */
     width: 100% !important; /* Fill the card width */
     max-width: none !important; /* Allow growing */
 }
 
 .search-results-grid .content-card-netflix .content-image img {
     width: 100% !important;
-    height: 160px !important;
-    object-fit: fill !important;
+    height: 190px !important;
+    object-fit: cover !important;
     object-position: center !important;
 }
 
@@ -1342,18 +1344,48 @@ html {
     }
 }
 
-/* Responsive search grid with flexible card sizes that fill the screen */
+/* Responsive search grid - filling the screen width with 5 per row target */
 @media (max-width: 1200px) {
     .search-results-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
         padding: 20px 30px;
+        justify-content: space-between;
+    }
+    
+    .search-results-grid .content-card-netflix {
+        min-width: 210px !important;
+        max-width: 260px !important;
+    }
+    
+    .search-results-grid .content-card-netflix .content-image {
+        height: 170px !important;
+    }
+    
+    .search-results-grid .content-card-netflix .content-image img {
+        height: 170px !important;
     }
 }
 
 @media (max-width: 900px) {
     .search-results-grid {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 14px;
         padding: 20px 20px;
+        justify-content: space-between;
+    }
+    
+    .search-results-grid .content-card-netflix {
+        min-width: 190px !important;
+        max-width: 230px !important;
+    }
+    
+    .search-results-grid .content-card-netflix .content-image {
+        height: 155px !important;
+    }
+    
+    .search-results-grid .content-card-netflix .content-image img {
+        height: 155px !important;
     }
     
     .search-results-header {
@@ -1367,18 +1399,24 @@ html {
 
 @media (max-width: 600px) {
     .search-results-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
-        row-gap: 25px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+        row-gap: 18px;
+        justify-content: space-between;
+    }
+    
+    .search-results-grid .content-card-netflix {
+        min-width: 160px !important;
+        max-width: 190px !important;
     }
     
     .search-results-grid .content-card-netflix .content-image {
-        height: 140px !important; /* Match mobile responsive height from carousel */
+        height: 140px !important;
     }
     
     .search-results-grid .content-card-netflix .content-image img {
         height: 140px !important;
-        object-fit: fill !important;
+        object-fit: cover !important;
         object-position: center !important;
     }
     
@@ -1390,8 +1428,22 @@ html {
 @media (max-width: 400px) {
     .search-results-grid {
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 15px;
-        row-gap: 25px;
+        gap: 10px;
+        row-gap: 16px;
+        justify-content: space-between;
+    }
+    
+    .search-results-grid .content-card-netflix {
+        min-width: 140px !important;
+        max-width: 170px !important;
+    }
+    
+    .search-results-grid .content-card-netflix .content-image {
+        height: 120px !important;
+    }
+    
+    .search-results-grid .content-card-netflix .content-image img {
+        height: 120px !important;
     }
 }
 

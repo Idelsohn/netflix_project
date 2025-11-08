@@ -191,6 +191,7 @@ class FeedManager {
         const logoutOption = dropdown.querySelector('.logout-option');
         logoutOption.addEventListener('click', () => {
             window.authManager.logout();
+            authManager.showNotification('Successfully logged out', 'info'); // Show logout message
         });
     }
 

@@ -76,14 +76,36 @@ async function authenticateUser(req, res) {
         if (isMatch) {
             const session = await sessionService.createSession(user.username);
             res.cookie('sessionId', session.sessionId, {
-                sameSite: 'none', // to allow cross-site cookies
-                secure: true  // to ensure cookies are only sent over HTTPS
+                httpOnly: true,
+                sameSite: 'lax', // helps prevent CSRF
+                secure: false,  // to ensure cookies are only sent over HTTPS
+                maxAge: 1000 * 60 * 60 * 24 // 1 day
             });
             res.status(200).json({ success: true, message: 'Authentication successful' });
         } 
         else {
             res.status(401).json({ error: 'Authentication failed' });
         }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+async function hasActiveSession(req, res) {
+    try {
+        const sessionId = req.cookies.sessionId;
+        if (!sessionId) {
+            return res.status(200).json({ success: false });
+        }
+        const session = await sessionService.getSessionById(sessionId);
+        if (!session) {
+            return res.status(200).json({ success: false });
+        }
+        const username = session.user;
+        if (!username) {
+            return res.status(200).json({ success: false });
+        }
+        res.status(200).json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -135,6 +157,7 @@ module.exports = {
     getUserByEmail,
     getCurrentUser, 
     authenticateUser, 
+    hasActiveSession,
     createUser,
     updateUser,
     deleteUser

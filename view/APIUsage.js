@@ -9,6 +9,14 @@ export class APIUsage {
         return res.json();
     }
 
+    async getCurrentUser() {
+        const res = await fetch(this.baseURL + "/users/me", {
+            method: 'GET',
+            credentials: 'include', // include cookies
+        });
+        return res.json();
+    }
+
     async authenticateUser(username, password) {
         const res = await fetch(this.baseURL + "/users/authenticate", {
             method: 'POST',
@@ -31,4 +39,20 @@ export class APIUsage {
         });
         return res.json();
     }
+
+    async hasActiveSession() {
+        const res = await fetch(this.baseURL + "/users/has-active-session", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // specify JSON content type
+            },
+            credentials: 'include', // include cookies
+        });
+        if (!res.ok) {
+            return { success: false };
+        }
+        return res.json();
+    }
+
+    // ---------- Profile API methods ----------
 }

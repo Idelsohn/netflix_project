@@ -18,7 +18,7 @@ async function createSession(username) {
     const session = new Session({ 
         sessionId: maxSessionId ? parseInt(maxSessionId.sessionId) + 1 : 1, 
         user: username, 
-        expiryDate: Date.now() + 36000000 
+        expiryDate: Date.now() + 86400000 // 1 day
     });
     return await session.save();
 }

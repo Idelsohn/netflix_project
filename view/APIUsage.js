@@ -11,7 +11,10 @@ export class APIUsage {
 
     async getCurrentUser() {
         const res = await fetch(this.baseURL + "/users/me", {
-            method: 'GET',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // specify JSON content type
+            },
             credentials: 'include', // include cookies
         });
         return res.json();
@@ -66,4 +69,23 @@ export class APIUsage {
     }
 
     // ---------- Profile API methods ----------
+    async getAllProfiles(username) {
+        const res = await fetch(this.baseURL + "/profiles/all?username=" + username, {
+            method: 'GET',
+            credentials: 'include', // include cookies
+        });
+        return res.json();
+    }
+
+    // async createProfile(name, avatarUrl) {
+    //     const res = await fetch(this.baseURL + "/profiles/create", {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         credentials: 'include', // include cookies
+    //         body: JSON.stringify({ name, avatarUrl })
+    //     });
+    //     return res.json();
+    // }
 }

@@ -111,6 +111,15 @@ async function hasActiveSession(req, res) {
     }
 }
 
+async function logoutUser(req, res) {
+    try {
+        res.clearCookie('sessionId');
+        res.status(200).json({ success: true, message: 'Logout successful' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
 async function createUser(req, res) {
     try {
         const isUsernameExist = await userService.getUser(req.body.username);
@@ -158,6 +167,7 @@ module.exports = {
     getCurrentUser, 
     authenticateUser, 
     hasActiveSession,
+    logoutUser,
     createUser,
     updateUser,
     deleteUser

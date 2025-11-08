@@ -8,6 +8,7 @@ router.get('/:email', userController.getUserByEmail);
 router.get('/me', userController.getCurrentUser);
 router.post('/has-active-session', userController.hasActiveSession);
 router.post('/authenticate', userController.authenticateUser);
+router.post('/logout', userController.logoutUser);
 router.post('/create', userController.createUser);
 router.put('/:username', userController.updateUser);
 router.delete('/:username', userController.deleteUser);

@@ -54,5 +54,16 @@ export class APIUsage {
         return res.json();
     }
 
+    async logoutUser() {
+        const res = await fetch(this.baseURL + "/users/logout", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // specify JSON content type
+            },
+            credentials: 'include', // include cookies
+        });
+        return res.json();
+    }
+
     // ---------- Profile API methods ----------
 }

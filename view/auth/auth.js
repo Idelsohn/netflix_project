@@ -453,12 +453,9 @@ class AuthManager {
         // Clear ALL localStorage data as required by exercise instructions
         localStorage.clear();
 
-        // clear all the cookies as well
-        document.cookie.split(";").forEach(cookie => {
-            const name = cookie.split("=")[0].trim();
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        });
-        
+        // Clear the cookies by calling the logout API
+        this.apiUsage.logoutUser();
+
         // Redirect to login
         setTimeout(() => {
             window.location.href = '../auth/login.html';

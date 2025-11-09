@@ -18,7 +18,7 @@ class AuthManager {
         }
         
         // Check if we're on the profiles page
-        if (window.location.pathname.includes('profiles.html')) {
+        if (window.location.pathname.includes('profiles/profiles.html')) {
             this.initProfilesPage();
         }
         
@@ -157,6 +157,14 @@ class AuthManager {
                 );
             });
         });
+
+        // Handle Manage Profiles button
+        const manageBtn = document.querySelector('.manage-profiles-button');
+        if (manageBtn) {
+            manageBtn.addEventListener('click', () => {
+                window.location.href = '../profiles/profiles-edit.html'; // Redirect to the edit page
+            });
+        }
     }
 
     createCardList(profiles) {
@@ -333,7 +341,7 @@ class AuthManager {
             
             // Immediate redirect to profiles page (relative path)
             setTimeout(() => {
-                window.location.href = '../auth/profiles.html';
+                window.location.href = '../profiles/profiles.html';
             }, 1000);
             
         } catch (error) {
@@ -442,7 +450,7 @@ class AuthManager {
             
             if (!profileId || !profileName) {
                 console.log('No profile selected, redirecting to profiles');
-                window.location.href = '../auth/profiles.html';
+                window.location.href = '../profiles/profiles.html';
                 return;
             }
         }

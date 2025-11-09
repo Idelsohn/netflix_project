@@ -11,6 +11,15 @@ async function getAllProfiles(req, res) {
     }
 }
 
+async function getProfile(req, res) {
+    try {
+        const profile = await profileService.getSpecificProfileOfUser(req.query.username, req.query.profile_name);
+        res.status(200).json(profile);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
 // // GET /profile/:id/edit or GET /profile/edit
 // async function editProfile(req, res) {
 //     try {
@@ -62,6 +71,7 @@ async function getAllProfiles(req, res) {
 
 module.exports = {
     getAllProfiles,
+    getProfile,
     // editProfile,
     // updateProfile
 };

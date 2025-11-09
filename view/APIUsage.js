@@ -77,6 +77,14 @@ export class APIUsage {
         return res.json();
     }
 
+    async getProfile(username, profileName){
+        const res = await fetch(this.baseURL + "/profiles/my_profile?username=" + username + "&profile_name=" + profileName, {
+            method: 'GET',
+            credentials: 'include', // include cookies
+        });
+        return res.json();
+    }
+
     // async createProfile(name, avatarUrl) {
     //     const res = await fetch(this.baseURL + "/profiles/create", {
     //         method: 'POST',

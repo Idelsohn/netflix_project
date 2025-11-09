@@ -9,6 +9,14 @@ async function getProfilesByUser(username) {
     return profiles;
 }
 
+async function getSpecificProfileOfUser(username, profile_name) {
+    if (!username || !profile_name) {
+        throw new Error('username is required');
+    }
+    const profile = await Profile.findOne({ username, profile_name });
+    return profile;
+}
+
 // async function createProfile(userId, attrs = {}) {
 //     const { name, type = 'adult', avatar = null, language = 'en', isActive = false } = attrs;
 
@@ -69,6 +77,7 @@ async function getProfilesByUser(username) {
 
 module.exports = {
     getProfilesByUser,
+    getSpecificProfileOfUser,
     // createProfile,
     // updateProfile,
     // deleteProfile,

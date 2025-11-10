@@ -20,58 +20,44 @@ async function getProfile(req, res) {
     }
 }
 
-// // GET /profile/:id/edit or GET /profile/edit
-// async function editProfile(req, res) {
-//     try {
-//         const id = req.params.id || (req.user && req.user._id);
-//         if (!id) return res.status(400).json({ error: 'Missing profile id' });
+async function createProfile(req, res) {
+    try {
+        await profileService.createProfile(req.body);
+        res.status(200).json({ success: true, message: 'Profile created successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
 
-//         // only allow owner or admin to edit
-//         if (!req.user) return res.status(401).json({ error: 'Authentication required' });
-//         if (req.user._id.toString() !== id.toString() && !req.user.isAdmin) {
-//             return res.status(403).json({ error: 'Forbidden' });
-//         }
+async function updateProfile(req, res) {
+    try {
+        const { username, old_profile_name, ...profileData } = req.body;
+        const updatedProfile = await profileService.updateProfile(username, old_profile_name, profileData);
+        if (!updatedProfile) {
+            return res.status(404).json({ message: 'Profile ' + old_profile_name + ' of username ' + username + ' not found' });
+        }
+        res.status(200).json(updatedProfile); 
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
 
-//         const user = await User.findById(id).select('-password');
-//         if (!user) return res.status(404).json({ error: 'Profile not found' });
-
-//         if (req.accepts('html')) return res.render('profile/edit', { user });
-//         return res.json(user);
-//     } catch (err) {
-//         return res.status(500).json({ error: err.message });
-//     }
-// }
-
-// // PUT /profile or PUT /profile/:id
-// async function updateProfile(req, res) {
-//     try {
-//         const id = req.params.id || (req.user && req.user._id);
-//         if (!id) return res.status(400).json({ error: 'Missing profile id' });
-
-//         if (!req.user) return res.status(401).json({ error: 'Authentication required' });
-//         if (req.user._id.toString() !== id.toString() && !req.user.isAdmin) {
-//             return res.status(403).json({ error: 'Forbidden' });
-//         }
-
-//         const allowed = ['name', 'email', 'bio']; // fields allowed to update
-//         const updates = {};
-//         for (const key of allowed) {
-//             if (Object.prototype.hasOwnProperty.call(req.body, key)) updates[key] = req.body[key];
-//         }
-
-//         // optional: handle password change separately with hashing
-//         const user = await User.findByIdAndUpdate(id, updates, { new: true, runValidators: true }).select('-password');
-//         if (!user) return res.status(404).json({ error: 'Profile not found' });
-
-//         return res.json(user);
-//     } catch (err) {
-//         return res.status(500).json({ error: err.message });
-//     }
-// }
+async function deleteProfile(req, res) {
+    try {
+        deletedProfile  = await profileService.deleteProfile(req.body.username, req.body.profile_name);
+        if (!deletedProfile){
+            return res.status(404).json({ message: 'Profile ' + req.body.profile_name + ' of username ' + req.body.username + ' not found' });
+        }
+        res.status(200).json({ message: 'Profile deleted' }); 
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
 
 module.exports = {
     getAllProfiles,
     getProfile,
-    // editProfile,
-    // updateProfile
+    createProfile,
+    updateProfile,
+    deleteProfile
 };

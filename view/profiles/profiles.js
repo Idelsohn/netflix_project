@@ -31,15 +31,21 @@ class ProfileManagement {
         this.setDefaultImageSelection();
         
         const selectionField = document.getElementById('profileSelect');
-        const nameField = document.getElementById('selectedProfileName');
+        const profileNameField = document.getElementById('selectedProfileName');
+        const getSelectedImage = () => {
+            const checked = document.querySelector('input[name="profileImageOption"]:checked');
+            const imagePathInsideImagesFolder = checked.value.substring(checked.value.indexOf('images'));
+            return checked ? imagePathInsideImagesFolder : '';
+        };
         selectionField.addEventListener('change', () => {
-            this.toggleReadonly(selectionField, nameField);
-            this.setImageSelection(selectionField, nameField);
+            this.toggleReadonly(selectionField, profileNameField);
+            this.setImageSelection(selectionField, profileNameField);
         });
 
         // Form submission
         profileEditForm.addEventListener('submit', (e) => {
-            this.validateAndSubmitForm(e, selectionField, nameField);
+            e.preventDefault(); // Prevent default form submission
+            this.validateAndSubmitForm(selectionField.value, profileNameField.value, getSelectedImage());
         });
 
         // canxel button
@@ -198,12 +204,60 @@ class ProfileManagement {
         }
     }
 
-    validateAndSubmitForm(){
-        // if delete - try delete the name (alert if profile doesnt exist)
-        // otherwise
-        // check wheather the new name is already exist and not empty if so error, otherwise -
-        // if the selector is new profile, add it
-        // otherwise update it (name and image)
+    async validateAndSubmitForm(selection, profile_name, image) {
+        if (!selection || selection === '') {
+            this.showNotification('You didn\'t select a profile', 'error');
+            return;
+        }
+        if (!profile_name || profile_name === '') {
+            this.showNotification('You didn\'t enter a profile name', 'error');
+            return;
+        }
+        const currentProfile = await this.apiUsage.getProfile(this.currentUsername, profile_name);
+        if (selection === "remove-profile") {
+            if (!currentProfile){
+                this.showNotification('Profile with this name does not exist', 'error');
+                return;
+            }
+            // delete profile
+            this.showNotification('Profile deleted successfully', 'success');
+            const res = await this.apiUsage.deleteProfile(this.currentUsername, profile_name);
+        }
+        else if (selection === "new-profile") {
+            if (currentProfile){
+                this.showNotification('Profile with this name already exist', 'error');
+                return;
+            }
+            // create profile
+            this.showNotification('Profile created successfully', 'success');
+            const res = await this.apiUsage.createProfile(this.currentUsername, profile_name, image);
+        }
+        else {
+            // Edit profile
+            this.showNotification('Profile updated successfully', 'success');
+            const res = await this.apiUsage.updateProfile(this.currentUsername, selection, profile_name, image);
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        
+        // Add to page
+        document.body.appendChild(notification);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) { // Check if still in DOM
+                notification.parentNode.removeChild(notification);
+            }
+        }, 2000);
+        
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
     }
 }
 

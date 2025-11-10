@@ -85,15 +85,38 @@ export class APIUsage {
         return res.json();
     }
 
-    // async createProfile(name, avatarUrl) {
-    //     const res = await fetch(this.baseURL + "/profiles/create", {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         credentials: 'include', // include cookies
-    //         body: JSON.stringify({ name, avatarUrl })
-    //     });
-    //     return res.json();
-    // }
+    async createProfile(username, profileName, avatarUrl) {
+        const res = await fetch(this.baseURL + "/profiles/create", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, profile_name: profileName, image: avatarUrl })
+        });
+        return res.json();
+    }
+
+    async updateProfile(username, profileName, newProfileName, newImageUrl) {
+        const res = await fetch(this.baseURL + "/profiles/update", {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                username,
+                old_profile_name: profileName,
+                profile_name: newProfileName,
+                image: newImageUrl
+            })
+        });
+        return res.json();
+    }
+
+    async deleteProfile(username, profileName) {
+        const res = await fetch(this.baseURL + "/profiles/delete", {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, profile_name: profileName })
+        });
+        return res.json();
+    }
 }

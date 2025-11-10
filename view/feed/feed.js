@@ -651,7 +651,7 @@ class FeedManager {
                 <div class="content-image">
                     <img src="${content.image}" alt="${content.name}" />
                     <div class="content-overlay">
-                        <button class="play-btn">▶</button>
+                        <button class="play-btn" data-content-id="${content.id}">▶</button>
                         <button class="info-btn" data-card-id="${instanceId}" title="More Info">ℹ️</button>
                         <button class="add-to-list-btn ${isInList ? 'in-list' : ''}" data-content-id="${content.id}" data-in-list="${isInList}" title="${isInList ? 'Remove from List' : 'Add to List'}">
                             <span class="list-icon">${isInList ? '✓' : '+'}</span>
@@ -723,7 +723,7 @@ class FeedManager {
             <div class="content-image">
                 <img src="${content.image}" alt="${content.name}" />
                 <div class="content-overlay">
-                    <button class="play-btn">▶</button>
+                    <button class="play-btn" data-content-id="${content.id}">▶</button>
                 </div>
             </div>
             <div class="content-info">
@@ -762,6 +762,11 @@ class FeedManager {
                     const closeBtn = e.target.closest('.close-details');
                     const instanceId = closeBtn.getAttribute('data-card-id');
                     this.hideContentDetails(instanceId);
+                } else if (e.target.closest('.play-btn')) {
+                    e.stopPropagation();
+                    const playBtn = e.target.closest('.play-btn');
+                    const contentId = parseInt(playBtn.getAttribute('data-content-id'));
+                    this.playContent(contentId);
                 } else if (e.target.closest('.content-image img')) {
                     // Handle click on the show image itself to show details
                     e.stopPropagation();
@@ -799,8 +804,8 @@ class FeedManager {
                     this.showHeroContentDetails(cardId);
                 } else if (e.target.closest('.hero-play-btn')) {
                     e.stopPropagation();
-                    // Show play notification
-                    this.showNotification('Playing content...', 'info');
+                    const heroContent = this.getRandomFeaturedContent();
+                    this.playContent(heroContent.id);
                 } else if (e.target.closest('.hero-add-to-list-btn')) {
                     e.stopPropagation();
                     this.handleHeroAddToList(e.target.closest('.hero-add-to-list-btn'));
@@ -867,7 +872,8 @@ class FeedManager {
         });
 
         heroPopup.querySelector('.hero-popup-play').addEventListener('click', () => {
-            this.showNotification('Playing content...', 'info');
+            this.playContent(content.id);
+            heroPopup.remove();
         });
     }
 
@@ -1297,6 +1303,31 @@ class FeedManager {
 
         // Update ALL instances of this content across all categories
         this.updateAllInstancesOfContentList(contentId, !isCurrentlyInList);
+    }
+
+    playContent(contentId) {
+        // Get the selected profile ID
+        const selectedProfileId = localStorage.getItem('selectedProfileId');
+        if (!selectedProfileId) {
+            this.showNotification('Please select a profile first', 'error');
+            return;
+        }
+
+        // Find the content in the catalog
+        const content = contentCatalog.find(c => c.id === contentId);
+        if (!content) {
+            this.showNotification('Content not found', 'error');
+            return;
+        }
+
+        // Show loading notification
+        this.showNotification('Loading video player...', 'info');
+
+        // Build video player URL with parameters
+        const videoPlayerUrl = `../video-player/video-player.html?contentId=${contentId}&episodeId=1&profileId=${selectedProfileId}`;
+        
+        // Navigate to video player
+        window.location.href = videoPlayerUrl;
     }
 }
 

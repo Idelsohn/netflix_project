@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const userRoutes = require("./routes/api/user_routes.js");
 const profileRoutes = require("./routes/api/profile_routes.js");
 const videoRoutes = require("./routes/api/video_routes.js");
+const savedContentRoutes = require("./routes/api/saved_content_routes.js");
 // const contentCatalogRoutes = require("./routes/api/content_catalog_routes.js");
 
 dotenv.config(); // load environment variables
@@ -34,6 +35,7 @@ mongoose.connect(
 app.use("/api/users", userRoutes);
 app.use("/api/profiles", profileRoutes);
 app.use("/api/video", videoRoutes);
+app.use("/api/saved-content", savedContentRoutes);
 // app.use("/api/content-catalog", contentCatalogRoutes);
 
 // start the server

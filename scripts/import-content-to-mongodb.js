@@ -1,12 +1,17 @@
-// Content catalog - dummy data for movies and series
-// Now supporting multiple genres per title for more realistic categorization
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+// Load environment variables
+dotenv.config();
+
+// Import content data directly (copied from models/data.js)
 const contentCatalog = [
     {
         id: 1,
         name: "Stranger Things",
         year: 2016,
         genres: ["Sci-Fi", "Horror", "Drama"],
-        genre: "Sci-Fi", // Primary genre for backward compatibility
+        genre: "Sci-Fi",
         likes: 1250,
         type: "series",
         image: "../../images/titles_images/stranger-things-586a302a5290e.jpg"
@@ -303,112 +308,157 @@ const contentCatalog = [
     }
 ];
 
-// Sample video content with episodes - dummy data for video player
-const videoContent = [
-    {
-        contentId: 1, // Stranger Things
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        type: "series",
-        currentSeason: 1,
-        episodes: [
-            {
-                episodeId: 1,
-                season: 1,
-                episode: 1,
-                title: "Chapter One: The Vanishing of Will Byers",
-                duration: 2950, // 49:10 minutes in seconds
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                thumbnail: "../../images/titles_images/stranger-things-586a302a5290e.jpg"
-            },
-            {
-                episodeId: 2,
-                season: 1,
-                episode: 2,
-                title: "Chapter Two: The Weirdo on Maple Street",
-                duration: 3360, // 56:00 minutes in seconds
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                thumbnail: "../../images/titles_images/stranger-things-586a302a5290e.jpg"
-            },
-            {
-                episodeId: 3,
-                season: 1,
-                episode: 3,
-                title: "Chapter Three: Holly, Jolly",
-                duration: 3120, // 52:00 minutes in seconds
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-                thumbnail: "../../images/titles_images/stranger-things-586a302a5290e.jpg"
-            }
-        ]
-    },
-    {
-        contentId: 4, // The Irishman (movie)
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        type: "movie",
-        episodes: [
-            {
-                episodeId: 1,
-                season: 1,
-                episode: 1,
-                title: "The Irishman",
-                duration: 12540, // 3:29:00 hours in seconds
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                thumbnail: "../../images/titles_images/the-irishman-5de1fdc43999d.jpg"
-            }
-        ]
-    },
-    {
-        contentId: 6, // Money Heist
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        type: "series",
-        currentSeason: 1,
-        episodes: [
-            {
-                episodeId: 1,
-                season: 1,
-                episode: 1,
-                title: "Efectuar lo acordado",
-                duration: 4170, // 69:30 minutes in seconds
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                thumbnail: "../../images/titles_images/la-casa-de-papel-5bdb348db30e4.jpg"
-            },
-            {
-                episodeId: 2,
-                season: 1,
-                episode: 2,
-                title: "Imprudencias letales",
-                duration: 3840, // 64:00 minutes in seconds
-                videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                thumbnail: "../../images/titles_images/la-casa-de-papel-5bdb348db30e4.jpg"
-            }
-        ]
-    }
-];
+// Define Content Schema for content catalog
+const contentSchema = new mongoose.Schema({
+    id: { type: Number, required: true, unique: true },
+    name: { type: String, required: true },
+    year: { type: Number, required: true },
+    genres: { type: [String], required: true },
+    genre: { type: String, required: true }, // Primary genre for backward compatibility
+    likes: { type: Number, default: 0 },
+    type: { type: String, enum: ['movie', 'series'], required: true },
+    image: { type: String, required: true },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+}, {
+    timestamps: true
+});
 
-// Profiles data - predefined array as required
-const profiles = [
-    { 
-        id: 1, 
-        name: "Yahav", 
-        image: "../../images/profile_pictures/profile_picture_1.jfif"
-    },
-    { 
-        id: 2, 
-        name: "Nadav", 
-        image: "../../images/profile_pictures/profile_picture_2.jfif"
-    },
-    { 
-        id: 3, 
-        name: "Roe", 
-        image: "../../images/profile_pictures/profile_picture_3.jfif"
-    },
-    { 
-        id: 4, 
-        name: "Amit", 
-        image: "../../images/profile_pictures/profile_picture_4.jfif"
-    },
-    { 
-        id: 5, 
-        name: "Or", 
-        image: "../../images/profile_pictures/profile_picture_5.jfif"
+// Create Content model
+const Content = mongoose.model('Content', contentSchema, 'content');
+
+// Function to import ONLY content catalog
+async function importContentCatalog() {
+    try {
+        console.log('📚 Importing content catalog to MongoDB...');
+        
+        // Clear existing content
+        await Content.deleteMany({});
+        console.log('🗑️  Cleared existing content catalog');
+        
+        let successCount = 0;
+        const errors = [];
+        
+        for (const item of contentCatalog) {
+            try {
+                const content = new Content({
+                    ...item,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                });
+                await content.save();
+                successCount++;
+                
+                // Show progress every 10 items
+                if (successCount % 10 === 0) {
+                    console.log(`📈 Progress: ${successCount}/${contentCatalog.length} content items imported`);
+                }
+            } catch (error) {
+                errors.push({ item: item.name, error: error.message });
+                console.log(`❌ Error importing "${item.name}": ${error.message}`);
+            }
+        }
+        
+        console.log(`✅ Content catalog imported: ${successCount}/${contentCatalog.length} items`);
+        
+        if (errors.length > 0) {
+            console.log('\n❌ Import Errors:');
+            errors.forEach((err, index) => {
+                console.log(`${index + 1}. ${err.item}: ${err.error}`);
+            });
+        }
+        
+        return { successCount, errors, total: contentCatalog.length };
+    } catch (error) {
+        throw new Error(`Failed to import content catalog: ${error.message}`);
     }
-];
+}
+
+// Main import function - imports ONLY content catalog
+async function importContentToMongoDB() {
+    try {
+        console.log('🚀 Starting MongoDB content catalog import...');
+        console.log(`📁 Database: ${process.env.MONGO_DB_NAME}`);
+        console.log(`🔗 MongoDB Address: ${process.env.MONGO_ADDRESS}`);
+        
+        // Connect to MongoDB
+        await mongoose.connect(
+            `${process.env.MONGO_ADDRESS}/${process.env.MONGO_DB_NAME}`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        
+        console.log('✅ Connected to MongoDB successfully');
+        
+        // Import content catalog only
+        const contentResult = await importContentCatalog();
+        
+        // Verify import
+        const totalContent = await Content.countDocuments();
+        
+        console.log('\n📋 Import Summary:');
+        console.log(`📚 Content Catalog: ${contentResult.successCount}/${contentResult.total} items imported`);
+        console.log(`🎯 Total content in database: ${totalContent}`);
+        
+        // Show sample data
+        console.log('\n📄 Sample imported content:');
+        const sampleContent = await Content.find().limit(5).select('name year type genres');
+        sampleContent.forEach((item, index) => {
+            console.log(`${index + 1}. ${item.name} (${item.year}) - ${item.type} - [${item.genres.join(', ')}]`);
+        });
+        
+        console.log('\n✨ Collections status:');
+        console.log('📚 content - ✅ IMPORTED (all movies and series catalog)');
+        console.log('📹 videosources - ⚠️  DYNAMIC (will be created when users upload/watch videos)');
+        console.log('⏱️ watchprogresses - ⚠️  DYNAMIC (will be created when users start watching)');
+        console.log('💾 savedcontents - ⚠️  DYNAMIC (will be created when users like/save content)');
+        
+        console.log('\n🎉 Content catalog import completed successfully!');
+        
+        console.log('\n📋 Next Steps:');
+        console.log('1. ✅ Content catalog ready in MongoDB');
+        console.log('2. 🔗 Video sources will be added dynamically during video upload/play');
+        console.log('3. 🔗 Watch progress will be saved automatically during video playback');
+        console.log('4. 🔗 Saved content will be added when users like/bookmark content');
+        console.log('5. 💻 Update frontend to use MongoDB APIs instead of localStorage');
+        
+        console.log('\n🛠️  Required implementations:');
+        console.log('• Create saved content schema and service');
+        console.log('• Update like buttons to call MongoDB API');
+        console.log('• Ensure video sources are saved when content is played');
+        console.log('• Update feed to load content from MongoDB');
+        
+    } catch (error) {
+        console.error('💥 Error during import process:', error.message);
+        console.error('Stack trace:', error.stack);
+    } finally {
+        // Close connection
+        await mongoose.connection.close();
+        console.log('🔐 MongoDB connection closed');
+        process.exit(0);
+    }
+}
+
+// Handle process termination
+process.on('SIGINT', async () => {
+    console.log('\n⚠️  Process interrupted by user');
+    await mongoose.connection.close();
+    process.exit(0);
+});
+
+process.on('unhandledRejection', async (reason, promise) => {
+    console.error('💥 Unhandled Promise Rejection:', reason);
+    await mongoose.connection.close();
+    process.exit(1);
+});
+
+// Export for potential reuse
+module.exports = { 
+    importContentToMongoDB, 
+    Content,
+    importContentCatalog
+};
+
+// Run the import if this file is executed directly
+if (require.main === module) {
+    importContentToMongoDB();
+}

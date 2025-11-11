@@ -184,7 +184,7 @@ class FeedManager {
             });
             
             // Redirect to profiles page to select a new profile
-            window.location.href = '../auth/profiles.html';
+            window.location.href = '../profiles/profiles.html';
         });
 
         // Logout functionality

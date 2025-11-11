@@ -12,14 +12,13 @@ class AuthManager {
             this.initLoginPage();
         }
 
-        // TODO: the sign-up page initialization
         // Check if we're on the sign-up page
         if (window.location.pathname.includes('sign-up.html')) {
             this.initSignUpPage();
         }
         
         // Check if we're on the profiles page
-        if (window.location.pathname.includes('profiles.html')) {
+        if (window.location.pathname.includes('profiles/profiles.html')) {
             this.initProfilesPage();
         }
         
@@ -140,13 +139,14 @@ class AuthManager {
         // Check if user is authenticated
         const hasActiveSession = await this.apiUsage.hasActiveSession();
         if (!hasActiveSession.success) {
-            // Redirect to login page if not authenticated
             this.logout();
             return;
         }
         
-        // profiles = await this.apiUsage.getCurrentUser();
-        this.createCardList();
+        // Load profiles and setup selection
+        const username = await this.apiUsage.getCurrentUser().then(user => user.username);
+        const profiles = await this.apiUsage.getAllProfiles(username);
+        this.createCardList(profiles);
 
         const allProfilesCards = document.querySelector('.profile-list').querySelectorAll('.profile-card');
         allProfilesCards.forEach((card) => {
@@ -157,20 +157,27 @@ class AuthManager {
                 );
             });
         });
+
+        // Handle Manage Profiles button
+        const manageBtn = document.querySelector('.manage-profiles-button');
+        if (manageBtn) {
+            manageBtn.addEventListener('click', () => {
+                window.location.href = '../profiles/profiles-edit.html'; // Redirect to the edit page
+            });
+        }
     }
 
-    createCardList() {
-        // TODO: Get the profiles data from MongoDB instead of file
+    createCardList(profiles) {
         profiles.forEach((profile) => {
             let card = document.createElement('div');
             card.className = 'profile-card';
             card.setAttribute('data-profile-id', profile.id);
             const img = document.createElement('img');
-            img.src = profile.image;
+            img.src = "../../" + profile.image;
             img.alt = profile.name;
             const nameDiv = document.createElement('div');
             nameDiv.className = 'profile-name';
-            nameDiv.textContent = profile.name;
+            nameDiv.textContent = profile.profile_name;
             card.appendChild(img);
             card.appendChild(nameDiv);
             document.querySelector('.profile-list').appendChild(card);
@@ -334,7 +341,7 @@ class AuthManager {
             
             // Immediate redirect to profiles page (relative path)
             setTimeout(() => {
-                window.location.href = 'profiles.html';
+                window.location.href = '../profiles/profiles.html';
             }, 1000);
             
         } catch (error) {
@@ -381,7 +388,7 @@ class AuthManager {
             
             // Immediate redirect to profiles page (relative path)
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = '../auth/login.html';
             }, 1000);
             
         } catch (error) {
@@ -430,7 +437,7 @@ class AuthManager {
         // Check if user is authenticated for protected pages
         if (!isLoggedIn) {
             console.log('Not authenticated, redirecting to login');
-            window.location.href = 'login.html';
+            window.location.href = '../auth/login.html';
             return;
         }
 
@@ -443,7 +450,7 @@ class AuthManager {
             
             if (!profileId || !profileName) {
                 console.log('No profile selected, redirecting to profiles');
-                window.location.href = 'profiles.html';
+                window.location.href = '../profiles/profiles.html';
                 return;
             }
         }

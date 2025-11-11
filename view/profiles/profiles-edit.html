@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profiles - Netflix</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h2 style="text-align: center;">Profile Management</h2>
+
+    <div class="card bg-secondary p-4 mt-4">
+        <form class="profile-edit-form">
+            <div class="mb-3">
+                <label for="profileSelect" class="form-label">Select method you want to perform (add, edit or delete profile)</label>
+                <select id="profileSelect" class="form-select">
+                    <option value="" selected disabled>Choose a profile...</option>
+                    <!-- Profile options will be dynamically inserted here -->
+                    <option value="new-profile">+ Create new profile</option>
+                    <option value="remove-profile">- Remove a profile</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="selectedProfileName" class="form-label">select a profile name</label>
+                <input type="text" id="selectedProfileName" class="form-control" />
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Choose profile image</label>
+                <!-- Profile image choices (readonly/disabled until a profile is selected) -->
+                <div id="profileImageOptions" class="d-flex flex-wrap gap-2"></div>
+            </div>
+            <div class="d-flex align-items-center mb-3">
+                <label class="form-label">Selected profile image - &nbsp</label>
+                <img id="profileImagePreview" src="../../images/profile_pictures/profile_picture_1.jfif" border="1px" alt="Preview Profile Image" class="rounded me-3" width="100" height="100" />
+            </div>
+            <button type="submit" id="saveProfileButton" class="btn btn-primary" style="background-color: #e50914; border: none;">Save Changes</button>
+            <button type="button" id="cancelButton" class="btn btn-outline-light ms-2">Cancel</button>
+        </form>
+    </div>
+  </div>
+
+    <!-- JavaScript files -->
+    <script src="../../models/data.js"></script>
+    <script src="../utils.js"></script>
+    <script type="module" src="../auth/auth.js"></script>
+    <script type="module" src="../profiles/profiles.js"></script>
+</body>
+
+</html>

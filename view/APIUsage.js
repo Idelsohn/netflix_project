@@ -11,7 +11,10 @@ export class APIUsage {
 
     async getCurrentUser() {
         const res = await fetch(this.baseURL + "/users/me", {
-            method: 'GET',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // specify JSON content type
+            },
             credentials: 'include', // include cookies
         });
         return res.json();
@@ -66,4 +69,54 @@ export class APIUsage {
     }
 
     // ---------- Profile API methods ----------
+    async getAllProfiles(username) {
+        const res = await fetch(this.baseURL + "/profiles/all?username=" + username, {
+            method: 'GET',
+            credentials: 'include', // include cookies
+        });
+        return res.json();
+    }
+
+    async getProfile(username, profileName){
+        const res = await fetch(this.baseURL + "/profiles/my_profile?username=" + username + "&profile_name=" + profileName, {
+            method: 'GET',
+            credentials: 'include', // include cookies
+        });
+        return res.json();
+    }
+
+    async createProfile(username, profileName, avatarUrl) {
+        const res = await fetch(this.baseURL + "/profiles/create", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, profile_name: profileName, image: avatarUrl })
+        });
+        return res.json();
+    }
+
+    async updateProfile(username, profileName, newProfileName, newImageUrl) {
+        const res = await fetch(this.baseURL + "/profiles/update", {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                username,
+                old_profile_name: profileName,
+                profile_name: newProfileName,
+                image: newImageUrl
+            })
+        });
+        return res.json();
+    }
+
+    async deleteProfile(username, profileName) {
+        const res = await fetch(this.baseURL + "/profiles/delete", {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, profile_name: profileName })
+        });
+        return res.json();
+    }
 }

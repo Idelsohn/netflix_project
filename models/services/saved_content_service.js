@@ -3,8 +3,8 @@ const SavedContent = require('../schemas/saved_content_schema');
 // Add content to user's saved list
 async function addToSavedContent(userId, profileId, contentId, type = 'liked', notes = '') {
     try {
-        // Check if already saved
-        const existingSave = await SavedContent.isContentSaved(userId, profileId, contentId, type);
+        // Check if already saved using real MongoDB function: findOne
+        const existingSave = await SavedContent.findOne({ userId, profileId, contentId, type });
         
         if (existingSave) {
             throw new Error('Content is already saved in this list');
@@ -48,7 +48,31 @@ async function removeFromSavedContent(userId, profileId, contentId, type = 'like
 // Toggle saved content (add if not exists, remove if exists)
 async function toggleSavedContent(userId, profileId, contentId, type = 'liked', notes = '') {
     try {
-        return await SavedContent.toggleSavedContent(userId, profileId, contentId, type, notes);
+        // Use real MongoDB function: findOne to check if content exists
+        const existingSave = await SavedContent.findOne({
+            userId,
+            profileId,
+            contentId,
+            type
+        });
+        
+        if (existingSave) {
+            // Use real MongoDB function: deleteOne to remove it
+            await SavedContent.deleteOne({ _id: existingSave._id });
+            return { action: 'removed', saved: false };
+        } else {
+            // Use real MongoDB functions: create new document and save
+            const savedItem = new SavedContent({
+                userId,
+                profileId,
+                contentId,
+                type,
+                notes,
+                savedAt: new Date()
+            });
+            await savedItem.save();
+            return { action: 'added', saved: true, data: savedItem };
+        }
     } catch (error) {
         throw new Error(`Failed to toggle saved content: ${error.message}`);
     }
@@ -57,7 +81,8 @@ async function toggleSavedContent(userId, profileId, contentId, type = 'liked', 
 // Check if content is saved by user
 async function isContentSaved(userId, profileId, contentId, type = 'liked') {
     try {
-        const savedItem = await SavedContent.isContentSaved(userId, profileId, contentId, type);
+        // Use real MongoDB function: findOne
+        const savedItem = await SavedContent.findOne({ userId, profileId, contentId, type });
         return !!savedItem;
     } catch (error) {
         throw new Error(`Failed to check saved status: ${error.message}`);
@@ -67,13 +92,19 @@ async function isContentSaved(userId, profileId, contentId, type = 'liked') {
 // Get user's saved content by type
 async function getUserSavedContent(userId, profileId, type = null, limit = null) {
     try {
-        let query = SavedContent.findUserSavedContent(userId, profileId, type);
-        
-        if (limit) {
-            query = query.limit(limit);
+        // Use real MongoDB function: find
+        const query = { userId, profileId };
+        if (type) {
+            query.type = type;
         }
         
-        return await query;
+        let result = SavedContent.find(query).sort({ savedAt: -1 });
+        
+        if (limit) {
+            result = result.limit(limit);
+        }
+        
+        return await result;
     } catch (error) {
         throw new Error(`Failed to get saved content: ${error.message}`);
     }
@@ -130,18 +161,18 @@ async function getUserSavedContentWithDetails(userId, profileId, type = null) {
 // Update saved content notes
 async function updateSavedContentNotes(userId, profileId, contentId, type, notes) {
     try {
-        const savedItem = await SavedContent.findOne({
-            userId,
-            profileId,
-            contentId,
-            type
-        });
+        // Use real MongoDB function: findOneAndUpdate
+        const updatedItem = await SavedContent.findOneAndUpdate(
+            { userId, profileId, contentId, type },
+            { $set: { notes: notes } },
+            { new: true }
+        );
 
-        if (!savedItem) {
+        if (!updatedItem) {
             throw new Error('Saved content not found');
         }
 
-        return await savedItem.updateNotes(notes);
+        return updatedItem;
     } catch (error) {
         throw new Error(`Failed to update saved content notes: ${error.message}`);
     }

@@ -1445,7 +1445,7 @@ class FeedManager {
         try {
             const selectedProfileId = localStorage.getItem('selectedProfileId');
             if (!selectedProfileId) return;
-
+            
             const response = await this.apiUsage.loadWatchlist(selectedProfileId);
             if (response.ok) {
                 const data = await response.json();

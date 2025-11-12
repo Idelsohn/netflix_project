@@ -166,4 +166,113 @@ export class APIUsage {
         });
         return res;
     }
+    
+    // ---------- Video Player API methods ----------
+    async loadEpisodes(contentId) {
+        const res = await fetch(this.baseURL + `/video/episodes/${contentId}`, { 
+            method: 'GET',
+            credentials: 'include' 
+        });
+        return res;
+    }
+
+    async loadSeriesInfo(contentId) {
+        const res = await fetch(this.baseURL + `/video/series/${contentId}`, {
+            method: 'GET',
+            credentials: 'include' 
+        });
+        return res;
+    }
+    
+    async loadAllEpisodesProgress(currentContentId, currentProfileId) {
+        const res = await fetch(this.baseURL + `/video/progress-batch/${currentContentId}?profileId=${currentProfileId}`, { 
+            method: 'GET',
+            credentials: 'include' 
+        });
+        return res;
+    }
+    
+    async sendProgressUpdate(progressData) {
+        const res = await fetch(this.baseURL + '/video/update-progress', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(progressData)
+        });
+        return res;
+    }
+    
+    async markAsCompleted(completionData) {
+        await fetch(this.baseURL + '/video/mark-completed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(completionData)
+        });
+    }
+    
+    async loadSavedProgress(currentContentId, currentEpisodeId, currentProfileId) {
+        const res = await fetch(this.baseURL + `/video/progress/${currentContentId}/${currentEpisodeId}?profileId=${currentProfileId}`, { 
+            method: 'POST', 
+            credentials: 'include' 
+        });
+        return res;
+    }
+    
+    async loadAllProgress(contentId, currentProfileId) {
+        const res = await fetch(this.baseURL + `/video/progress-all/${contentId}?profileId=${currentProfileId}`, { 
+            method: 'POST', 
+            credentials: 'include' 
+        });
+        return res;
+    }
+    
+    async checkForRemoteUpdates(currentProfileId, params) {
+        const res = await fetch(this.baseURL + `/video/progress-updates/${currentProfileId}${params}`, { 
+            method: 'POST',
+            credentials: 'include' 
+        });
+        return res;
+    }
+    
+    async updateViewingStats(statsData) {
+        await fetch(this.baseURL + '/video/update-stats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(statsData)
+        });
+    }
+    
+    async changeVideoQuality(currentContentId, currentEpisodeId, currentProfileId, quality) {
+        const res = await fetch(this.baseURL + `/video/source/quality/${currentContentId}/${currentEpisodeId}?quality=${quality}&profileId=${currentProfileId}`, { 
+            method: 'GET',
+            credentials: 'include' 
+        });
+        return res;
+    }
+    
+    async loadAvailableQualities(currentContentId, currentEpisodeId) {
+        const res = await fetch(this.baseURL + `/video/qualities/${currentContentId}/${currentEpisodeId}`, { 
+            method: 'GET',
+            credentials: 'include' 
+        });
+        return res;
+    }
+    
+    async loadVideoContent(currentContentId, currentEpisodeId, currentProfileId) {
+        const res = await fetch(this.baseURL + `/video/source/best/${currentContentId}/${currentEpisodeId}?profileId=${currentProfileId}`, { 
+            method: 'GET',
+            credentials: 'include' 
+        });
+        return res;
+    }
+
+    async checkPreviousProgress(currentContentId, currentEpisodeId, currentProfileId) {
+        const res = await fetch(this.baseURL + `/video/progress/${currentContentId}/${currentEpisodeId}?profileId=${currentProfileId}`, { 
+            method: 'GET',
+            credentials: 'include' 
+        });
+        return res;
+    }
 }

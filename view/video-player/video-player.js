@@ -1,6 +1,9 @@
 // Video Player Main Controller
+import { APIUsage } from '../APIUsage.js';
+
 class VideoPlayer {
     constructor() {
+        this.apiUsage = new APIUsage();
         this.video = null;
         this.currentContentId = null;
         this.currentEpisodeId = 1;
@@ -68,23 +71,11 @@ class VideoPlayer {
     }
 
     async verifyAuthentication() {
-        try {
-            const response = await fetch('/api/users/has-active-session', {
-                credentials: 'include'
-            });
-            
-            if (!response.ok) {
-                throw new Error('Authentication failed');
-            }
-            
-            const data = await response.json();
-            if (!data.success) {
-                window.location.href = '../auth/login.html';
-                return;
-            }
-        } catch (error) {
-            console.error('Authentication check failed:', error);
-            window.location.href = '../auth/login.html';
+        // Check if user is authenticated
+        const hasActiveSession = await this.apiUsage.hasActiveSession();
+        if (!hasActiveSession.success) {
+            this.logout();
+            return;
         }
     }
 
@@ -104,11 +95,7 @@ class VideoPlayer {
     async loadVideoContent() {
         try {
             // Get video source
-            const response = await fetch(
-                `/api/video/source/best/${this.currentContentId}/${this.currentEpisodeId}?profileId=${this.currentProfileId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.loadVideoContent(this.currentContentId, this.currentEpisodeId, this.currentProfileId);
             if (!response.ok) {
                 throw new Error('Video source not found');
             }
@@ -131,11 +118,7 @@ class VideoPlayer {
 
     async loadEpisodes() {
         try {
-            const response = await fetch(
-                `/api/video/episodes/${this.currentContentId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.loadEpisodes(this.currentContentId);
             if (response.ok) {
                 const data = await response.json();
                 this.episodes = data.episodes || [];
@@ -148,11 +131,7 @@ class VideoPlayer {
 
     async checkPreviousProgress() {
         try {
-            const response = await fetch(
-                `/api/video/progress/${this.currentContentId}/${this.currentEpisodeId}?profileId=${this.currentProfileId}`,
-                { credentials: 'include' }
-            );
-
+            const response = this.apiUsage.checkPreviousProgress(this.currentContentId, this.currentEpisodeId, this.currentProfileId);
             if (response.ok) {
                 const data = await response.json();
                 const progress = data.progress;
@@ -426,17 +405,10 @@ class VideoPlayer {
     async onVideoEnded() {
         // Mark as completed
         try {
-            await fetch('/api/video/mark-completed', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    contentId: this.currentContentId,
-                    episodeId: this.currentEpisodeId,
-                    profileId: this.currentProfileId
-                })
+            await this.apiUsage.markAsCompleted({
+                contentId: this.currentContentId,
+                episodeId: this.currentEpisodeId,
+                profileId: this.currentProfileId
             });
         } catch (error) {
             console.error('Failed to mark as completed:', error);

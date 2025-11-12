@@ -171,10 +171,10 @@ class AuthManager {
         profiles.forEach((profile) => {
             let card = document.createElement('div');
             card.className = 'profile-card';
-            card.setAttribute('data-profile-id', profile.id);
+            card.setAttribute('data-profile-id', profile._id);
             const img = document.createElement('img');
             img.src = "../../" + profile.image;
-            img.alt = profile.name;
+            img.alt = profile.profile_name;
             const nameDiv = document.createElement('div');
             nameDiv.className = 'profile-name';
             nameDiv.textContent = profile.profile_name;

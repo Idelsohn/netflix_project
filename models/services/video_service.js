@@ -4,7 +4,13 @@ const VideoSources = require('../schemas/video_sources_schema');
 // Get user's watch progress for specific content and episode
 async function getWatchProgress(userId, profileId, contentId, episodeId = 1) {
     try {
-        return await WatchProgress.findUserProgress(userId, profileId, contentId, episodeId);
+        // Use real MongoDB function: findOne
+        return await WatchProgress.findOne({
+            userId,
+            profileId,
+            contentId,
+            episodeId: episodeId || 1
+        });
     } catch (error) {
         throw new Error(`Failed to get watch progress: ${error.message}`);
     }
@@ -20,8 +26,13 @@ async function saveWatchProgress(progressData) {
             throw new Error('Missing required fields for watch progress');
         }
 
-        // Find existing progress or create new one
-        let progress = await WatchProgress.findUserProgress(userId, profileId, contentId, episodeId);
+        // Use real MongoDB function: findOne to check if exists
+        let progress = await WatchProgress.findOne({
+            userId,
+            profileId,
+            contentId,
+            episodeId: episodeId || 1
+        });
         
         if (progress) {
             // Update existing progress
@@ -41,8 +52,10 @@ async function saveWatchProgress(progressData) {
             });
         }
 
-        // Calculate and save
-        progress.calculateWatchPercentage();
+        // Calculate watch percentage manually
+        progress.watchPercentage = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
+        progress.lastWatched = new Date();
+        
         return await progress.save();
     } catch (error) {
         throw new Error(`Failed to save watch progress: ${error.message}`);
@@ -52,7 +65,13 @@ async function saveWatchProgress(progressData) {
 // Mark content as completed
 async function markAsCompleted(userId, profileId, contentId, episodeId = 1) {
     try {
-        const progress = await WatchProgress.findUserProgress(userId, profileId, contentId, episodeId);
+        // Use real MongoDB function: findOne
+        const progress = await WatchProgress.findOne({
+            userId,
+            profileId,
+            contentId,
+            episodeId: episodeId || 1
+        });
         
         if (progress) {
             progress.completed = true;
@@ -70,7 +89,10 @@ async function markAsCompleted(userId, profileId, contentId, episodeId = 1) {
 // Get user's recent watch history
 async function getRecentWatchHistory(userId, profileId, limit = 10) {
     try {
-        return await WatchProgress.getRecentHistory(userId, profileId, limit);
+        // Use real MongoDB function: find with sort and limit
+        return await WatchProgress.find({ userId, profileId })
+            .sort({ lastWatched: -1 })
+            .limit(limit);
     } catch (error) {
         throw new Error(`Failed to get watch history: ${error.message}`);
     }
@@ -92,7 +114,12 @@ async function getContentProgress(userId, profileId, contentId) {
 // Get video sources for specific content and episode
 async function getVideoSources(contentId, episodeId = 1) {
     try {
-        return await VideoSources.findActiveVideos(contentId, episodeId);
+        // Use real MongoDB function: find
+        return await VideoSources.find({
+            contentId,
+            episodeId: episodeId || 1,
+            isActive: true
+        });
     } catch (error) {
         throw new Error(`Failed to get video sources: ${error.message}`);
     }
@@ -101,13 +128,26 @@ async function getVideoSources(contentId, episodeId = 1) {
 // Get best quality video source
 async function getBestVideoSource(contentId, episodeId = 1) {
     try {
-        const bestSource = await VideoSources.findBestQuality(contentId, episodeId);
-        if (!bestSource) {
-            // Fallback to any active source
-            const sources = await VideoSources.findActiveVideos(contentId, episodeId);
-            return sources.length > 0 ? sources[0] : null;
-        }
-        return bestSource;
+        // Use real MongoDB function: find with sort
+        // Quality priority: 4K > 1080p > 720p > 480p > 360p
+        const qualityOrder = { '4K': 5, '1080p': 4, '720p': 3, '480p': 2, '360p': 1 };
+        
+        const sources = await VideoSources.find({
+            contentId,
+            episodeId: episodeId || 1,
+            isActive: true
+        });
+        
+        if (sources.length === 0) return null;
+        
+        // Sort by quality (highest first)
+        sources.sort((a, b) => {
+            const qualityA = qualityOrder[a.quality] || 0;
+            const qualityB = qualityOrder[b.quality] || 0;
+            return qualityB - qualityA;
+        });
+        
+        return sources[0];
     } catch (error) {
         throw new Error(`Failed to get best video source: ${error.message}`);
     }
@@ -209,33 +249,34 @@ async function importVideoFromAPI(importData) {
             throw new Error('Missing required fields for video import');
         }
 
-        // Create basic video source first
+        // Extract video ID manually based on source type
+        let videoId = null;
+        if (sourceType === 'youtube') {
+            const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+            videoId = match ? match[1] : null;
+        } else if (sourceType === 'vimeo') {
+            const match = url.match(/vimeo\.com\/(\d+)/);
+            videoId = match ? match[1] : null;
+        }
+        
+        if (!videoId) {
+            throw new Error('Could not extract video ID from URL');
+        }
+
+        // Create basic video source
         const videoSource = new VideoSources({
             contentId,
             episodeId: episodeId || 1,
             videoUrl: url,
             sourceType,
-            duration: 0, // Will be updated after API fetch
-            isActive: false // Will be activated after successful import
+            duration: 3600, // Default 1 hour, should be fetched from API
+            isActive: true,
+            metadata: {
+                title: `Imported ${sourceType} video`,
+                description: `Imported from ${url}`,
+                uploadDate: new Date()
+            }
         });
-
-        // Extract video ID
-        const videoId = videoSource.extractVideoId();
-        if (!videoId) {
-            throw new Error('Could not extract video ID from URL');
-        }
-
-        // Here you would normally fetch metadata from external APIs
-        // For now, we'll create a placeholder that can be enhanced later
-        videoSource.metadata = {
-            title: `Imported ${sourceType} video`,
-            description: `Imported from ${url}`,
-            uploadDate: new Date()
-        };
-
-        // Activate after successful processing
-        videoSource.isActive = true;
-        videoSource.duration = 3600; // Default 1 hour, should be fetched from API
 
         return await videoSource.save();
     } catch (error) {

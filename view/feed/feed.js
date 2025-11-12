@@ -16,6 +16,7 @@ class FeedManager {
 
         this.setupFeedPage();
         this.setupNavbarFiltering();
+        this.loadUserDataFromMongoDB(); // Load user data from MongoDB first
         this.loadContent();
         this.setupEventListeners();
         this.showUserGreeting();
@@ -170,7 +171,7 @@ class FeedManager {
 
         // Change Profile functionality
         const changeProfileOption = dropdown.querySelector('.change-profile-option');
-        changeProfileOption.addEventListener('click', () => {
+        changeProfileOption.addEventListener('click', async () => {
             // Clear profile-specific data but keep authentication state
             localStorage.removeItem('selectedProfileId');
             localStorage.removeItem('selectedProfileName');
@@ -182,6 +183,9 @@ class FeedManager {
             ['home', 'movies', 'tv shows'].forEach(category => {
                 localStorage.removeItem(`heroContent_${category}`);
             });
+            
+            // Show notification that data is being cleared
+            this.showNotification('Switching profiles...', 'info');
             
             // Redirect to profiles page to select a new profile
             window.location.href = '../profiles/profiles.html';
@@ -1089,7 +1093,7 @@ class FeedManager {
         this.currentContent.sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    handleLike(likeBtn) {
+    async handleLike(likeBtn) {
         const contentId = parseInt(likeBtn.getAttribute('data-content-id'));
         const isCurrentlyLiked = likeBtn.getAttribute('data-liked') === 'true';
         const heartIcon = likeBtn.querySelector('.heart-icon');
@@ -1099,25 +1103,46 @@ class FeedManager {
         const originalContent = contentCatalog.find(c => c.id === contentId);
         let currentCount = contentLikes[contentId] || (originalContent ? originalContent.likes : 0);
 
-        if (isCurrentlyLiked) {
-            // Unlike
-            const likedContent = JSON.parse(localStorage.getItem('likedContent') || '[]');
-            const updatedLiked = likedContent.filter(id => id !== contentId);
-            localStorage.setItem('likedContent', JSON.stringify(updatedLiked));
+        // Sync with MongoDB using toggle endpoint
+        const syncResult = await this.syncLikedContentToMongoDB(contentId);
+        
+        // Determine new state based on MongoDB response or fallback to local toggle
+        let newIsLiked;
+        if (syncResult.success) {
+            // Use MongoDB result
+            newIsLiked = syncResult.saved;
             
-            currentCount--;
-            heartIcon.textContent = '🤍';
-            likeBtn.classList.remove('liked');
-            likeBtn.setAttribute('data-liked', 'false');
-        } else {
-            // Like
-            const likedContent = JSON.parse(localStorage.getItem('likedContent') || '[]');
-            if (!likedContent.includes(contentId)) {
-                likedContent.push(contentId);
-                localStorage.setItem('likedContent', JSON.stringify(likedContent));
+            // Update localStorage to match MongoDB
+            let likedContent = JSON.parse(localStorage.getItem('likedContent') || '[]');
+            if (newIsLiked) {
+                if (!likedContent.includes(contentId)) {
+                    likedContent.push(contentId);
+                    currentCount++;
+                }
+            } else {
+                likedContent = likedContent.filter(id => id !== contentId);
+                currentCount--;
             }
-            
-            currentCount++;
+            localStorage.setItem('likedContent', JSON.stringify(likedContent));
+        } else {
+            // Fallback to local toggle if MongoDB fails
+            console.warn('MongoDB sync failed, using localStorage fallback');
+            newIsLiked = !isCurrentlyLiked;
+            let likedContent = JSON.parse(localStorage.getItem('likedContent') || '[]');
+            if (newIsLiked) {
+                if (!likedContent.includes(contentId)) {
+                    likedContent.push(contentId);
+                    currentCount++;
+                }
+            } else {
+                likedContent = likedContent.filter(id => id !== contentId);
+                currentCount--;
+            }
+            localStorage.setItem('likedContent', JSON.stringify(likedContent));
+        }
+        
+        // Update UI based on new state
+        if (newIsLiked) {
             heartIcon.textContent = '❤️';
             likeBtn.classList.add('liked');
             likeBtn.setAttribute('data-liked', 'true');
@@ -1127,6 +1152,14 @@ class FeedManager {
             setTimeout(() => {
                 heartIcon.style.transform = 'scale(1)';
             }, 300);
+        } else {
+            heartIcon.textContent = '🤍';
+            likeBtn.classList.remove('liked');
+            likeBtn.setAttribute('data-liked', 'false');
+        }
+        
+        if (!syncResult.success) {
+            console.warn('Failed to sync with MongoDB:', syncResult.error);
         }
 
         // Update like count in localStorage
@@ -1134,10 +1167,10 @@ class FeedManager {
         localStorage.setItem('contentLikes', JSON.stringify(contentLikes));
 
         // Update ALL instances of this content across all categories
-        this.updateAllInstancesOfContent(contentId, currentCount, !isCurrentlyLiked);
+        this.updateAllInstancesOfContent(contentId, currentCount, newIsLiked);
 
         // Show feedback
-        const action = isCurrentlyLiked ? 'Like removed' : 'Like added';
+        const action = newIsLiked ? 'Like added' : 'Like removed';
         
         // Simple notification
         const notification = document.createElement('div');
@@ -1192,32 +1225,47 @@ class FeedManager {
         });
     }
 
-    handleAddToList(addToListBtn) {
+    async handleAddToList(addToListBtn) {
         const contentId = parseInt(addToListBtn.getAttribute('data-content-id'));
         const isCurrentlyInList = addToListBtn.getAttribute('data-in-list') === 'true';
         const listIcon = addToListBtn.querySelector('.list-icon');
         
-        // Get the current user list from localStorage
-        let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+        // Sync with MongoDB using toggle endpoint
+        const syncResult = await this.syncWatchlistToMongoDB(contentId);
         
-        if (isCurrentlyInList) {
-            // Remove from list
-            userList = userList.filter(id => id !== contentId);
-            localStorage.setItem('userList', JSON.stringify(userList));
+        // Determine new state based on MongoDB response or fallback to local toggle
+        let newIsInList;
+        if (syncResult.success) {
+            // Use MongoDB result
+            newIsInList = syncResult.saved;
             
-            listIcon.textContent = '+';
-            addToListBtn.classList.remove('in-list');
-            addToListBtn.setAttribute('data-in-list', 'false');
-            addToListBtn.setAttribute('title', 'Add to List');
-            
-            this.showNotification('Removed from My List', 'info');
-        } else {
-            // Add to list
-            if (!userList.includes(contentId)) {
-                userList.push(contentId);
-                localStorage.setItem('userList', JSON.stringify(userList));
+            // Update localStorage to match MongoDB
+            let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+            if (newIsInList) {
+                if (!userList.includes(contentId)) {
+                    userList.push(contentId);
+                }
+            } else {
+                userList = userList.filter(id => id !== contentId);
             }
-            
+            localStorage.setItem('userList', JSON.stringify(userList));
+        } else {
+            // Fallback to local toggle if MongoDB fails
+            console.warn('MongoDB sync failed, using localStorage fallback');
+            newIsInList = !isCurrentlyInList;
+            let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+            if (newIsInList) {
+                if (!userList.includes(contentId)) {
+                    userList.push(contentId);
+                }
+            } else {
+                userList = userList.filter(id => id !== contentId);
+            }
+            localStorage.setItem('userList', JSON.stringify(userList));
+        }
+        
+        // Update UI based on new state
+        if (newIsInList) {
             listIcon.textContent = '✓';
             addToListBtn.classList.add('in-list');
             addToListBtn.setAttribute('data-in-list', 'true');
@@ -1230,10 +1278,21 @@ class FeedManager {
             }, 300);
             
             this.showNotification('Added to My List', 'success');
+        } else {
+            listIcon.textContent = '+';
+            addToListBtn.classList.remove('in-list');
+            addToListBtn.setAttribute('data-in-list', 'false');
+            addToListBtn.setAttribute('title', 'Add to List');
+            
+            this.showNotification('Removed from My List', 'info');
+        }
+        
+        if (!syncResult.success) {
+            console.warn('Failed to sync with MongoDB:', syncResult.error);
         }
 
         // Update ALL instances of this content across all categories
-        this.updateAllInstancesOfContentList(contentId, !isCurrentlyInList);
+        this.updateAllInstancesOfContentList(contentId, newIsInList);
     }
 
     updateAllInstancesOfContentList(contentId, isNowInList) {
@@ -1261,32 +1320,47 @@ class FeedManager {
         });
     }
 
-    handleHeroAddToList(addToListBtn) {
+    async handleHeroAddToList(addToListBtn) {
         const contentId = parseInt(addToListBtn.getAttribute('data-content-id'));
         const isCurrentlyInList = addToListBtn.getAttribute('data-in-list') === 'true';
         const listIcon = addToListBtn.querySelector('.list-icon');
         
-        // Get the current user list from localStorage
-        let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+        // Sync with MongoDB using toggle endpoint
+        const syncResult = await this.syncWatchlistToMongoDB(contentId);
         
-        if (isCurrentlyInList) {
-            // Remove from list
-            userList = userList.filter(id => id !== contentId);
-            localStorage.setItem('userList', JSON.stringify(userList));
+        // Determine new state based on MongoDB response or fallback to local toggle
+        let newIsInList;
+        if (syncResult.success) {
+            // Use MongoDB result
+            newIsInList = syncResult.saved;
             
-            listIcon.textContent = '+';
-            addToListBtn.classList.remove('in-list');
-            addToListBtn.setAttribute('data-in-list', 'false');
-            addToListBtn.innerHTML = '<span class="list-icon">+</span> Add to My List';
-            
-            this.showNotification('Removed from My List', 'info');
-        } else {
-            // Add to list
-            if (!userList.includes(contentId)) {
-                userList.push(contentId);
-                localStorage.setItem('userList', JSON.stringify(userList));
+            // Update localStorage to match MongoDB
+            let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+            if (newIsInList) {
+                if (!userList.includes(contentId)) {
+                    userList.push(contentId);
+                }
+            } else {
+                userList = userList.filter(id => id !== contentId);
             }
-            
+            localStorage.setItem('userList', JSON.stringify(userList));
+        } else {
+            // Fallback to local toggle if MongoDB fails
+            console.warn('MongoDB sync failed, using localStorage fallback');
+            newIsInList = !isCurrentlyInList;
+            let userList = JSON.parse(localStorage.getItem('userList') || '[]');
+            if (newIsInList) {
+                if (!userList.includes(contentId)) {
+                    userList.push(contentId);
+                }
+            } else {
+                userList = userList.filter(id => id !== contentId);
+            }
+            localStorage.setItem('userList', JSON.stringify(userList));
+        }
+        
+        // Update UI based on new state
+        if (newIsInList) {
             listIcon.textContent = '✓';
             addToListBtn.classList.add('in-list');
             addToListBtn.setAttribute('data-in-list', 'true');
@@ -1299,10 +1373,21 @@ class FeedManager {
             }, 300);
             
             this.showNotification('Added to My List', 'success');
+        } else {
+            listIcon.textContent = '+';
+            addToListBtn.classList.remove('in-list');
+            addToListBtn.setAttribute('data-in-list', 'false');
+            addToListBtn.innerHTML = '<span class="list-icon">+</span> Add to My List';
+            
+            this.showNotification('Removed from My List', 'info');
+        }
+        
+        if (!syncResult.success) {
+            console.warn('Failed to sync with MongoDB:', syncResult.error);
         }
 
         // Update ALL instances of this content across all categories
-        this.updateAllInstancesOfContentList(contentId, !isCurrentlyInList);
+        this.updateAllInstancesOfContentList(contentId, newIsInList);
     }
 
     playContent(contentId) {
@@ -1328,6 +1413,168 @@ class FeedManager {
         
         // Navigate to video player
         window.location.href = videoPlayerUrl;
+    }
+
+    // MongoDB Synchronization Functions
+
+    async loadUserDataFromMongoDB() {
+        try {
+            const selectedProfileId = localStorage.getItem('selectedProfileId');
+            if (!selectedProfileId) {
+                console.log('No profile selected, skipping MongoDB sync');
+                return;
+            }
+
+            // Load watchlist (My List) from MongoDB
+            await this.loadWatchlistFromMongoDB();
+            
+            // Load liked content from MongoDB
+            await this.loadLikedContentFromMongoDB();
+            
+            console.log('User data loaded from MongoDB successfully');
+        } catch (error) {
+            console.error('Failed to load user data from MongoDB:', error);
+            // Fallback to localStorage if MongoDB fails
+            this.showNotification('Using offline data - sync will resume when connection is restored', 'info');
+        }
+    }
+
+    async loadWatchlistFromMongoDB() {
+        try {
+            const selectedProfileId = localStorage.getItem('selectedProfileId');
+            if (!selectedProfileId) return;
+
+            const response = await fetch(`/api/saved-content/watchlist?profileId=${selectedProfileId}`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const watchlistIds = data.watchlist.map(item => item.contentId);
+                
+                // Update localStorage to match MongoDB
+                localStorage.setItem('userList', JSON.stringify(watchlistIds));
+                
+                console.log('Watchlist synced from MongoDB:', watchlistIds.length, 'items');
+            } else if (response.status === 404 || response.status === 400) {
+                // No watchlist found or profile issue - use empty array
+                localStorage.setItem('userList', JSON.stringify([]));
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Failed to load watchlist from MongoDB:', error);
+            throw error;
+        }
+    }
+
+    async loadLikedContentFromMongoDB() {
+        try {
+            const selectedProfileId = localStorage.getItem('selectedProfileId');
+            if (!selectedProfileId) return;
+
+            const response = await fetch(`/api/saved-content/liked?profileId=${selectedProfileId}`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const likedIds = data.likedContent.map(item => item.contentId);
+                
+                // Update localStorage to match MongoDB
+                localStorage.setItem('likedContent', JSON.stringify(likedIds));
+                
+                console.log('Liked content synced from MongoDB:', likedIds.length, 'items');
+            } else if (response.status === 404 || response.status === 400) {
+                // No liked content found or profile issue - use empty array
+                localStorage.setItem('likedContent', JSON.stringify([]));
+            } else {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Failed to load liked content from MongoDB:', error);
+            throw error;
+        }
+    }
+
+    async syncWatchlistToMongoDB(contentId) {
+        try {
+            const selectedProfileId = localStorage.getItem('selectedProfileId');
+            if (!selectedProfileId) {
+                throw new Error('No profile selected');
+            }
+
+            // Use toggle endpoint - it handles add/remove logic automatically
+            const response = await fetch('/api/saved-content/toggle', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contentId: parseInt(contentId),
+                    profileId: parseInt(selectedProfileId),
+                    type: 'watchlist'
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(`Watchlist synced to MongoDB:`, data.message);
+                return { success: true, data, action: data.action, saved: data.saved };
+            } else {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to sync watchlist');
+            }
+        } catch (error) {
+            console.error('Failed to sync watchlist to MongoDB:', error);
+            // Don't throw error to maintain functionality if MongoDB is unavailable
+            return { success: false, error: error.message };
+        }
+    }
+
+    async syncLikedContentToMongoDB(contentId) {
+        try {
+            const selectedProfileId = localStorage.getItem('selectedProfileId');
+            if (!selectedProfileId) {
+                throw new Error('No profile selected');
+            }
+
+            // Use toggle endpoint - it handles add/remove logic automatically
+            const response = await fetch('/api/saved-content/toggle', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contentId: parseInt(contentId),
+                    profileId: parseInt(selectedProfileId),
+                    type: 'liked'
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(`Liked content synced to MongoDB:`, data.message);
+                return { success: true, data, action: data.action, saved: data.saved };
+            } else {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to sync liked content');
+            }
+        } catch (error) {
+            console.error('Failed to sync liked content to MongoDB:', error);
+            // Don't throw error to maintain functionality if MongoDB is unavailable
+            return { success: false, error: error.message };
+        }
     }
 }
 

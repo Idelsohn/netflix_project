@@ -119,4 +119,51 @@ export class APIUsage {
         });
         return res.json();
     }
+
+    // ---------- Feed API methods ----------
+    async loadWatchlist(selectedProfileId) {
+        const res = await fetch(this.baseURL + `/saved-content/watchlist?profileId=${selectedProfileId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        return res;
+    }
+    
+    async loadLikedContent(selectedProfileId) {
+        const res = await fetch(this.baseURL + `/saved-content/liked?profileId=${selectedProfileId}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        return res;
+    }
+    
+    async syncWatchlist(contentId, selectedProfileId) {
+        const res = await fetch(this.baseURL + '/saved-content/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                contentId: parseInt(contentId),
+                profileId: parseInt(selectedProfileId),
+                type: 'watchlist'
+            })
+        });
+        return res;
+    }
+    
+    async syncLikedContent(contentId, selectedProfileId) {
+        const res = await fetch(this.baseURL + '/saved-content/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                contentId: parseInt(contentId),
+                profileId: parseInt(selectedProfileId),
+                type: 'liked'
+            })
+        });
+        return res;
+    }
 }

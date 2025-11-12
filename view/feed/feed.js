@@ -1,7 +1,9 @@
 // Feed page functionality - likes, search, sorting, content display
+import { APIUsage } from '../APIUsage.js';
 
 class FeedManager {
     constructor() {
+        this.apiUsage = new APIUsage();
         this.currentContent = [...contentCatalog];
         this.isAlphabeticalSort = false;
         this.activeCategory = 'home';
@@ -1444,14 +1446,7 @@ class FeedManager {
             const selectedProfileId = localStorage.getItem('selectedProfileId');
             if (!selectedProfileId) return;
 
-            const response = await fetch(`/api/saved-content/watchlist?profileId=${selectedProfileId}`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
+            const response = await this.apiUsage.loadWatchlist(selectedProfileId);
             if (response.ok) {
                 const data = await response.json();
                 const watchlistIds = data.watchlist.map(item => item.contentId);
@@ -1477,13 +1472,7 @@ class FeedManager {
             const selectedProfileId = localStorage.getItem('selectedProfileId');
             if (!selectedProfileId) return;
 
-            const response = await fetch(`/api/saved-content/liked?profileId=${selectedProfileId}`, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await this.apiUsage.loadLikedContent(selectedProfileId);
 
             if (response.ok) {
                 const data = await response.json();
@@ -1513,19 +1502,7 @@ class FeedManager {
             }
 
             // Use toggle endpoint - it handles add/remove logic automatically
-            const response = await fetch('/api/saved-content/toggle', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    contentId: parseInt(contentId),
-                    profileId: parseInt(selectedProfileId),
-                    type: 'watchlist'
-                })
-            });
-
+            const response = await this.apiUsage.syncWatchlist(contentId, selectedProfileId);
             if (response.ok) {
                 const data = await response.json();
                 console.log(`Watchlist synced to MongoDB:`, data.message);
@@ -1549,19 +1526,7 @@ class FeedManager {
             }
 
             // Use toggle endpoint - it handles add/remove logic automatically
-            const response = await fetch('/api/saved-content/toggle', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    contentId: parseInt(contentId),
-                    profileId: parseInt(selectedProfileId),
-                    type: 'liked'
-                })
-            });
-
+            const response = await this.apiUsage.syncLikedContent(contentId, selectedProfileId);
             if (response.ok) {
                 const data = await response.json();
                 console.log(`Liked content synced to MongoDB:`, data.message);

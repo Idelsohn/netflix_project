@@ -50,6 +50,11 @@ class VideoPlayer {
             this.episodeManager = new EpisodeManager(this);
             this.progressSync = new ProgressSync(this);
             
+            // Update duration if metadata already loaded
+            if (this.video.duration && !isNaN(this.video.duration)) {
+                this.videoControls.updateDuration();
+            }
+            
             // Check for previous progress
             await this.checkPreviousProgress();
             

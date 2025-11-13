@@ -153,7 +153,6 @@ class EpisodeManager {
 
         episodeItem.innerHTML = `
             <div class="episode-thumbnail">
-                <img src="${episode.thumbnailUrl || '../images/default-episode.jpg'}" alt="Episode ${episode.episodeNumber}">
                 <div class="episode-duration">${this.formatDuration(episode.duration)}</div>
                 ${progress ? `<div class="episode-progress-bar">
                     <div class="progress-fill" style="width: ${progress.percentage}%"></div>
@@ -263,13 +262,6 @@ class EpisodeManager {
         
         if (currentEpisode && this.currentEpisodeDescription) {
             this.currentEpisodeDescription.textContent = currentEpisode.description || '';
-        }
-        
-        // Update thumbnail - use content catalog image
-        const thumbnailImg = document.getElementById('currentEpisodeThumbnail');
-        if (thumbnailImg && this.player.contentInfo) {
-            thumbnailImg.src = this.player.contentInfo.image || '../images/default-episode.jpg';
-            thumbnailImg.alt = currentEpisode?.title || 'Current Episode';
         }
     }
 

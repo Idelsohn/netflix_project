@@ -4,18 +4,18 @@ import { APIUsage } from '../APIUsage.js';
 class FeedManager {
     constructor() {
         this.apiUsage = new APIUsage();
-        this.currentContent = [...contentCatalog];
         this.isAlphabeticalSort = false;
         this.activeCategory = 'home';
         this.init();
     }
 
-    init() {
+    async init() {
         // Only initialize if we're on the feed page (feed.html)
         if (!window.location.pathname.includes('feed.html')) {
             return;
         }
 
+        this.currentContent = await this.apiUsage.getContentCatalog();
         this.setupFeedPage();
         this.setupNavbarFiltering();
         this.loadUserDataFromMongoDB(); // Load user data from MongoDB first
@@ -306,7 +306,7 @@ class FeedManager {
         }
     }
 
-    loadContent() {
+    async loadContent() {
         const contentSection = document.getElementById('contentCategories');
         if (!contentSection) return;
 
@@ -316,10 +316,10 @@ class FeedManager {
         this.createHeroSection();
 
         // Create category rows
-        this.createCategoryRows(contentSection);
+        await this.createCategoryRows(contentSection);
     }
 
-    createCategoryRows(container) {
+    async createCategoryRows(container) {
         // Special handling for "My List" - show only one section with all user's content
         if (this.activeCategory.toLowerCase() === 'my list') {
             const userList = JSON.parse(localStorage.getItem('userList') || '[]');
@@ -344,7 +344,7 @@ class FeedManager {
                 return;
             } else {
                 // Show user's list content in a special grid layout that can handle multiple rows
-                let userContent = contentCatalog.filter(content => userList.includes(content.id));
+                let userContent = this.currentContent.filter(content => userList.includes(content.id));
                 
                 // Apply alphabetical sorting if enabled for My List
                 if (this.isAlphabeticalSort) {
@@ -377,7 +377,7 @@ class FeedManager {
         }
 
         // Get content based on active category (navbar filtering)
-        const activeContent = this.getContentByCategory(this.activeCategory);
+        const activeContent = await this.getContentByCategory(this.activeCategory);
         
         // Check if this is a page that should show genre-based categories
         const genreBasedPages = ['home', 'movies', 'tv shows'];
@@ -595,7 +595,7 @@ class FeedManager {
         const activeContent = this.getContentByCategory(this.activeCategory);
         
         // If no content in active category, use all content
-        const contentPool = activeContent.length > 0 ? activeContent : contentCatalog;
+        const contentPool = activeContent.length > 0 ? activeContent : this.currentContent;
         
         // If we have stored hero content, try to find it
         if (storedHeroId) {
@@ -822,7 +822,7 @@ class FeedManager {
 
     showHeroContentDetails(contentId) {
         // Find the content in the catalog
-        const content = contentCatalog.find(c => c.id == contentId);
+        const content = this.currentContent.find(c => c.id == contentId);
         if (!content) return;
 
         // Get current like count
@@ -938,7 +938,7 @@ class FeedManager {
         }
     }
 
-    handleSearch(searchTerm) {
+    async handleSearch(searchTerm) {
         const contentSection = document.getElementById('contentCategories');
         const heroSection = document.getElementById('heroSection');
         if (!contentSection) return;
@@ -955,7 +955,7 @@ class FeedManager {
         }
 
         // Search across all content regardless of category
-        const allContent = [...contentCatalog];
+        const allContent = await this.apiUsage.getContentCatalog();
         const filteredContent = allContent.filter(content => {
             const searchLower = searchTerm.toLowerCase();
             
@@ -1015,27 +1015,27 @@ class FeedManager {
         contentSection.appendChild(searchGrid);
     }
 
-    getContentByCategory(category) {
+    async getContentByCategory(category) {
         switch(category) {
             case 'home':
-                return [...contentCatalog];
+                return await this.apiUsage.getContentCatalog();
             case 'movies':
-                return contentCatalog.filter(content => content.type === 'movie');
+                return this.currentContent.filter(content => content.type === 'movie');
             case 'tv shows':
-                return contentCatalog.filter(content => content.type === 'series');
+                return this.currentContent.filter(content => content.type === 'series');
             case 'games':
                 return [];
             case 'new & popular':
-                return contentCatalog
+                return this.currentContent
                     .filter(content => content.year >= 2018)
                     .sort((a, b) => b.likes - a.likes);
             case 'my list':
                 const userList = JSON.parse(localStorage.getItem('userList') || '[]');
-                return contentCatalog.filter(content => userList.includes(content.id));
+                return this.currentContent.filter(content => userList.includes(content.id));
             case 'browse by languages':
-                return [...contentCatalog];
+                return await this.apiUsage.getContentCatalog();
             default:
-                return [...contentCatalog];
+                return await this.apiUsage.getContentCatalog();
         }
     }
 
@@ -1102,7 +1102,7 @@ class FeedManager {
         
         // Get the current like count from localStorage or original data
         const contentLikes = JSON.parse(localStorage.getItem('contentLikes') || '{}');
-        const originalContent = contentCatalog.find(c => c.id === contentId);
+        const originalContent = this.currentContent.find(c => c.id === contentId);
         let currentCount = contentLikes[contentId] || (originalContent ? originalContent.likes : 0);
 
         // Sync with MongoDB using toggle endpoint
@@ -1401,7 +1401,7 @@ class FeedManager {
         }
 
         // Find the content in the catalog
-        const content = contentCatalog.find(c => c.id === contentId);
+        const content = this.currentContent.find(c => c.id === contentId);
         if (!content) {
             this.showNotification('Content not found', 'error');
             return;

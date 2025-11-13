@@ -128,6 +128,15 @@ export class APIUsage {
         return res.json();
     }
 
+    // ---------- content Catalog API methods ----------
+    async getContentCatalog() {
+        const res = await fetch(this.baseURL + "/content-catalog/all", {
+            method: 'GET',
+            credentials: 'include', // include cookies
+        });
+        return res.json();
+    }
+
     // ---------- Feed API methods ----------
     async loadWatchlist(selectedProfileId) {
         const res = await fetch(this.baseURL + `/saved-content/watchlist?profileId=${selectedProfileId}`, {

@@ -137,6 +137,16 @@ export class APIUsage {
         return res.json();
     }
 
+    async updateLikesOfContentCatalog(contentID, newLikesAmount) {
+        const res = await fetch(this.baseURL + "/content-catalog/update-likes", {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ id: parseInt(contentID), likes: parseInt(newLikesAmount) })
+        });
+        return res.json();
+    }
+
     // ---------- Feed API methods ----------
     async loadWatchlist(selectedProfileId) {
         const res = await fetch(this.baseURL + `/saved-content/watchlist?profileId=${selectedProfileId}`, {

@@ -1105,7 +1105,7 @@ class FeedManager {
         const originalContent = this.currentContent.find(c => c.id === contentId);
         let currentCount = contentLikes[contentId] || (originalContent ? originalContent.likes : 0);
 
-        // Sync with MongoDB using toggle endpoint
+        // Sync with MongoDB
         const syncResult = await this.syncLikedContentToMongoDB(contentId);
         
         // Determine new state based on MongoDB response or fallback to local toggle
@@ -1164,6 +1164,8 @@ class FeedManager {
             console.warn('Failed to sync with MongoDB:', syncResult.error);
         }
 
+        await this.apiUsage.updateLikesOfContentCatalog(contentId, currentCount);
+
         // Update like count in localStorage
         contentLikes[contentId] = currentCount;
         localStorage.setItem('contentLikes', JSON.stringify(contentLikes));
@@ -1196,6 +1198,9 @@ class FeedManager {
                 notification.parentNode.removeChild(notification);
             }
         }, 2000);
+
+        // update the local catalog
+        this.currentContent = await this.apiUsage.getContentCatalog();
     }
 
     updateAllInstancesOfContent(contentId, newLikeCount, isNowLiked) {

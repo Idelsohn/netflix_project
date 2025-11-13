@@ -1,5 +1,8 @@
 // Video Player Main Controller
 import { APIUsage } from '../APIUsage.js';
+import { VideoControls } from './video-controls.js';
+import { EpisodeManager } from './episode-manager.js';
+import { ProgressSync } from './progress-sync.js';
 
 class VideoPlayer {
     constructor() {
@@ -102,8 +105,8 @@ class VideoPlayer {
             const data = await response.json();
             this.videoSource = data.source;
 
-            // Set video source
-            this.video.src = this.videoSource.videoUrl;
+            // Set video source - add relative path prefix for local files
+            this.video.src = `../../${this.videoSource.videoUrl}`;
             this.video.preload = 'metadata';
 
             // Load episodes list

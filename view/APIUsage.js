@@ -154,7 +154,7 @@ export class APIUsage {
             credentials: 'include',
             body: JSON.stringify({
                 contentId: parseInt(contentId),
-                profileId: parseInt(selectedProfileId),
+                profileId: selectedProfileId,
                 type: 'watchlist'
             })
         });
@@ -168,7 +168,7 @@ export class APIUsage {
             credentials: 'include',
             body: JSON.stringify({
                 contentId: parseInt(contentId),
-                profileId: parseInt(selectedProfileId),
+                profileId: selectedProfileId,
                 type: 'liked'
             })
         });

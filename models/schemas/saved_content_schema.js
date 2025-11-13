@@ -1,16 +1,14 @@
 const mongoose = require('mongoose');
 
 const savedContentSchema = new mongoose.Schema({
-    userId: {
+    username: {
         type: String,
         required: true,
         index: true
     },
     profileId: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 5
+        type: String,
+        required: true
     },
     contentId: {
         type: Number,
@@ -33,22 +31,22 @@ const savedContentSchema = new mongoose.Schema({
 }, {
     timestamps: true,
     indexes: [
-        { userId: 1, profileId: 1 },
+        { username: 1, profileId: 1 },
         { contentId: 1 },
-        { userId: 1, profileId: 1, type: 1 },
+        { username: 1, profileId: 1, type: 1 },
         { savedAt: -1 }
     ]
 });
 
 // Compound unique index to prevent duplicate saved items
 savedContentSchema.index(
-    { userId: 1, profileId: 1, contentId: 1, type: 1 }, 
+    { username: 1, profileId: 1, contentId: 1, type: 1 }, 
     { unique: true }
 );
 
 // Static method to find user's saved content
-savedContentSchema.statics.findUserSavedContent = function(userId, profileId, type = null) {
-    const query = { userId, profileId };
+savedContentSchema.statics.findUserSavedContent = function(username, profileId, type = null) {
+    const query = { username, profileId };
     if (type) {
         query.type = type;
     }
@@ -56,28 +54,28 @@ savedContentSchema.statics.findUserSavedContent = function(userId, profileId, ty
 };
 
 // Static method to check if content is saved by user
-savedContentSchema.statics.isContentSaved = function(userId, profileId, contentId, type = 'liked') {
-    return this.findOne({ userId, profileId, contentId, type });
+savedContentSchema.statics.isContentSaved = function(username, profileId, contentId, type = 'liked') {
+    return this.findOne({ username, profileId, contentId, type });
 };
 
 // Static method to get user's liked content
-savedContentSchema.statics.getUserLikedContent = function(userId, profileId) {
-    return this.findUserSavedContent(userId, profileId, 'liked');
+savedContentSchema.statics.getUserLikedContent = function(username, profileId) {
+    return this.findUserSavedContent(username, profileId, 'liked');
 };
 
 // Static method to get user's watchlist
-savedContentSchema.statics.getUserWatchlist = function(userId, profileId) {
-    return this.findUserSavedContent(userId, profileId, 'watchlist');
+savedContentSchema.statics.getUserWatchlist = function(username, profileId) {
+    return this.findUserSavedContent(username, profileId, 'watchlist');
 };
 
 // Static method to get user's bookmarked content
-savedContentSchema.statics.getUserBookmarkedContent = function(userId, profileId) {
-    return this.findUserSavedContent(userId, profileId, 'bookmarked');
+savedContentSchema.statics.getUserBookmarkedContent = function(username, profileId) {
+    return this.findUserSavedContent(username, profileId, 'bookmarked');
 };
 
 // Static method to toggle saved content
-savedContentSchema.statics.toggleSavedContent = async function(userId, profileId, contentId, type = 'liked', notes = '') {
-    const existingSave = await this.findOne({ userId, profileId, contentId, type });
+savedContentSchema.statics.toggleSavedContent = async function(username, profileId, contentId, type = 'liked', notes = '') {
+    const existingSave = await this.findOne({ username, profileId, contentId, type });
     
     if (existingSave) {
         // Remove if exists
@@ -86,7 +84,7 @@ savedContentSchema.statics.toggleSavedContent = async function(userId, profileId
     } else {
         // Add if doesn't exist
         const newSave = new this({
-            userId,
+            username,
             profileId,
             contentId,
             type,

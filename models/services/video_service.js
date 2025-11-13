@@ -2,11 +2,11 @@ const WatchProgress = require('../schemas/watch_progress_schema');
 const VideoSources = require('../schemas/video_sources_schema');
 
 // Get user's watch progress for specific content and episode
-async function getWatchProgress(userId, profileId, contentId, episodeId = 1) {
+async function getWatchProgress(username, profileId, contentId, episodeId = 1) {
     try {
         // Use real MongoDB function: findOne
         return await WatchProgress.findOne({
-            userId,
+            username,
             profileId,
             contentId,
             episodeId: episodeId || 1
@@ -19,16 +19,16 @@ async function getWatchProgress(userId, profileId, contentId, episodeId = 1) {
 // Save or update user's watch progress
 async function saveWatchProgress(progressData) {
     try {
-        const { userId, profileId, contentId, episodeId, currentTime, duration, deviceInfo } = progressData;
+        const { username, profileId, contentId, episodeId, currentTime, duration, deviceInfo } = progressData;
         
         // Validate required fields
-        if (!userId || !profileId || !contentId || currentTime === undefined || !duration) {
+        if (!username || !profileId || !contentId || currentTime === undefined || !duration) {
             throw new Error('Missing required fields for watch progress');
         }
 
         // Use real MongoDB function: findOne to check if exists
         let progress = await WatchProgress.findOne({
-            userId,
+            username,
             profileId,
             contentId,
             episodeId: episodeId || 1
@@ -42,7 +42,7 @@ async function saveWatchProgress(progressData) {
         } else {
             // Create new progress entry
             progress = new WatchProgress({
-                userId,
+                username,
                 profileId,
                 contentId,
                 episodeId: episodeId || 1,
@@ -63,11 +63,11 @@ async function saveWatchProgress(progressData) {
 }
 
 // Mark content as completed
-async function markAsCompleted(userId, profileId, contentId, episodeId = 1) {
+async function markAsCompleted(username, profileId, contentId, episodeId = 1) {
     try {
         // Use real MongoDB function: findOne
         const progress = await WatchProgress.findOne({
-            userId,
+            username,
             profileId,
             contentId,
             episodeId: episodeId || 1
@@ -87,10 +87,10 @@ async function markAsCompleted(userId, profileId, contentId, episodeId = 1) {
 }
 
 // Get user's recent watch history
-async function getRecentWatchHistory(userId, profileId, limit = 10) {
+async function getRecentWatchHistory(username, profileId, limit = 10) {
     try {
         // Use real MongoDB function: find with sort and limit
-        return await WatchProgress.find({ userId, profileId })
+        return await WatchProgress.find({ username, profileId })
             .sort({ lastWatched: -1 })
             .limit(limit);
     } catch (error) {
@@ -99,10 +99,10 @@ async function getRecentWatchHistory(userId, profileId, limit = 10) {
 }
 
 // Get all progress for a specific content (all episodes)
-async function getContentProgress(userId, profileId, contentId) {
+async function getContentProgress(username, profileId, contentId) {
     try {
         return await WatchProgress.find({
-            userId,
+            username,
             profileId,
             contentId
         }).sort({ episodeId: 1 });
@@ -285,10 +285,10 @@ async function importVideoFromAPI(importData) {
 }
 
 // Get watch statistics for a user profile
-async function getWatchStatistics(userId, profileId) {
+async function getWatchStatistics(username, profileId) {
     try {
         const stats = await WatchProgress.aggregate([
-            { $match: { userId, profileId } },
+            { $match: { username, profileId } },
             {
                 $group: {
                     _id: null,

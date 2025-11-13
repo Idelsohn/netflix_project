@@ -62,8 +62,7 @@ class VideoPlayer {
         const params = new URLSearchParams(window.location.search);
         this.currentContentId = parseInt(params.get('contentId'));
         this.currentEpisodeId = parseInt(params.get('episodeId')) || 1;
-        this.currentProfileId = parseInt(params.get('profileId')) || 
-                               parseInt(localStorage.getItem('selectedProfileId'));
+        this.currentProfileId = params.get('profileId') || localStorage.getItem('selectedProfileId');
 
         if (!this.currentContentId || !this.currentProfileId) {
             throw new Error('Missing required parameters: contentId and profileId');

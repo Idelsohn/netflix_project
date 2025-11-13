@@ -29,7 +29,7 @@ class StorageManager {
 
     static getSelectedProfile() {
         return {
-            id: parseInt(localStorage.getItem('selectedProfileId')),
+            id: localStorage.getItem('selectedProfileId'),
             name: localStorage.getItem('selectedProfileName')
         };
     }

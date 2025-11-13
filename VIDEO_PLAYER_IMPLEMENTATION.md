@@ -85,7 +85,7 @@ view/feed/
 ### Watch Progress Schema
 ```javascript
 {
-  userId: ObjectId,              // מזהה משתמש
+  username: ObjectId,              // מזהה משתמש
   profileId: Number,             // מזהה פרופיל (1-5)
   contentId: Number,             // מזהה תוכן
   episodeId: Number,             // מזהה פרק

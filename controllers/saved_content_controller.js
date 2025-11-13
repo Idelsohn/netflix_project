@@ -25,7 +25,6 @@ async function toggleSavedContent(req, res) {
     try {
         const username = await getCurrentUserFromSession(req);
         const { contentId, profileId, type, notes } = req.body;
-
         if (!contentId || !profileId) {
             return res.status(400).json({ 
                 error: 'Missing required fields: contentId, profileId' 
@@ -34,7 +33,7 @@ async function toggleSavedContent(req, res) {
 
         const result = await savedContentService.toggleSavedContent(
             username,
-            parseInt(profileId),
+            profileId,
             parseInt(contentId),
             type || 'liked',
             notes || ''
@@ -65,7 +64,7 @@ async function addToSavedContent(req, res) {
 
         const savedItem = await savedContentService.addToSavedContent(
             username,
-            parseInt(profileId),
+            profileId,
             parseInt(contentId),
             type || 'liked',
             notes || ''
@@ -99,7 +98,7 @@ async function removeFromSavedContent(req, res) {
 
         const result = await savedContentService.removeFromSavedContent(
             username,
-            parseInt(profileId),
+            profileId,
             parseInt(contentId),
             type || 'liked'
         );
@@ -132,14 +131,14 @@ async function checkSavedStatus(req, res) {
 
         const isSaved = await savedContentService.isContentSaved(
             username,
-            parseInt(profileId),
+            profileId,
             parseInt(contentId),
             type || 'liked'
         );
 
         res.status(200).json({
             contentId: parseInt(contentId),
-            profileId: parseInt(profileId),
+            profileId: profileId,
             type: type || 'liked',
             saved: isSaved
         });
@@ -160,13 +159,13 @@ async function getUserSavedContent(req, res) {
 
         const savedContent = await savedContentService.getUserSavedContent(
             username,
-            parseInt(profileId),
+            profileId,
             type || null,
             limit ? parseInt(limit) : null
         );
 
         res.status(200).json({
-            profileId: parseInt(profileId),
+            profileId: profileId,
             type: type || 'all',
             count: savedContent.length,
             savedContent: savedContent
@@ -188,12 +187,12 @@ async function getUserLikedContent(req, res) {
 
         const likedContent = await savedContentService.getUserLikedContent(
             username,
-            parseInt(profileId),
+            profileId,
             limit ? parseInt(limit) : null
         );
 
         res.status(200).json({
-            profileId: parseInt(profileId),
+            profileId: profileId,
             type: 'liked',
             count: likedContent.length,
             likedContent: likedContent
@@ -215,12 +214,12 @@ async function getUserWatchlist(req, res) {
 
         const watchlist = await savedContentService.getUserWatchlist(
             username,
-            parseInt(profileId),
+            profileId,
             limit ? parseInt(limit) : null
         );
 
         res.status(200).json({
-            profileId: parseInt(profileId),
+            profileId: profileId,
             type: 'watchlist',
             count: watchlist.length,
             watchlist: watchlist
@@ -242,12 +241,12 @@ async function getUserBookmarkedContent(req, res) {
 
         const bookmarkedContent = await savedContentService.getUserBookmarkedContent(
             username,
-            parseInt(profileId),
+            profileId,
             limit ? parseInt(limit) : null
         );
 
         res.status(200).json({
-            profileId: parseInt(profileId),
+            profileId: profileId,
             type: 'bookmarked',
             count: bookmarkedContent.length,
             bookmarkedContent: bookmarkedContent
@@ -271,7 +270,7 @@ async function updateSavedContentNotes(req, res) {
 
         const updatedItem = await savedContentService.updateSavedContentNotes(
             username,
-            parseInt(profileId),
+            profileId,
             parseInt(contentId),
             type || 'liked',
             notes
@@ -303,11 +302,11 @@ async function getSavedContentStatistics(req, res) {
 
         const stats = await savedContentService.getSavedContentStatistics(
             username,
-            parseInt(profileId)
+            profileId
         );
 
         res.status(200).json({
-            profileId: parseInt(profileId),
+            profileId: profileId,
             statistics: stats
         });
     } catch (error) {
@@ -327,7 +326,7 @@ async function clearUserSavedContent(req, res) {
 
         const result = await savedContentService.clearUserSavedContent(
             username,
-            parseInt(profileId),
+            profileId,
             type || null
         );
 

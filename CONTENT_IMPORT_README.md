@@ -156,7 +156,7 @@ async function ensureVideoSourceExists(contentId, episodeId, videoUrl, duration)
 ### Saved Content Collection
 ```javascript
 {
-  userId: String,
+  username: String,
   profileId: Number,
   contentId: Number,
   savedAt: Date,

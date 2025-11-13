@@ -1,17 +1,17 @@
 const SavedContent = require('../schemas/saved_content_schema');
 
 // Add content to user's saved list
-async function addToSavedContent(userId, profileId, contentId, type = 'liked', notes = '') {
+async function addToSavedContent(username, profileId, contentId, type = 'liked', notes = '') {
     try {
         // Check if already saved using real MongoDB function: findOne
-        const existingSave = await SavedContent.findOne({ userId, profileId, contentId, type });
+        const existingSave = await SavedContent.findOne({ username, profileId, contentId, type });
         
         if (existingSave) {
             throw new Error('Content is already saved in this list');
         }
 
         const savedItem = new SavedContent({
-            userId,
+            username,
             profileId,
             contentId,
             type,
@@ -26,10 +26,10 @@ async function addToSavedContent(userId, profileId, contentId, type = 'liked', n
 }
 
 // Remove content from user's saved list
-async function removeFromSavedContent(userId, profileId, contentId, type = 'liked') {
+async function removeFromSavedContent(username, profileId, contentId, type = 'liked') {
     try {
         const result = await SavedContent.deleteOne({
-            userId,
+            username,
             profileId,
             contentId,
             type
@@ -46,11 +46,11 @@ async function removeFromSavedContent(userId, profileId, contentId, type = 'like
 }
 
 // Toggle saved content (add if not exists, remove if exists)
-async function toggleSavedContent(userId, profileId, contentId, type = 'liked', notes = '') {
+async function toggleSavedContent(username, profileId, contentId, type = 'liked', notes = '') {
     try {
         // Use real MongoDB function: findOne to check if content exists
         const existingSave = await SavedContent.findOne({
-            userId,
+            username,
             profileId,
             contentId,
             type
@@ -63,7 +63,7 @@ async function toggleSavedContent(userId, profileId, contentId, type = 'liked', 
         } else {
             // Use real MongoDB functions: create new document and save
             const savedItem = new SavedContent({
-                userId,
+                username,
                 profileId,
                 contentId,
                 type,
@@ -79,10 +79,10 @@ async function toggleSavedContent(userId, profileId, contentId, type = 'liked', 
 }
 
 // Check if content is saved by user
-async function isContentSaved(userId, profileId, contentId, type = 'liked') {
+async function isContentSaved(username, profileId, contentId, type = 'liked') {
     try {
         // Use real MongoDB function: findOne
-        const savedItem = await SavedContent.findOne({ userId, profileId, contentId, type });
+        const savedItem = await SavedContent.findOne({ username, profileId, contentId, type });
         return !!savedItem;
     } catch (error) {
         throw new Error(`Failed to check saved status: ${error.message}`);
@@ -90,10 +90,10 @@ async function isContentSaved(userId, profileId, contentId, type = 'liked') {
 }
 
 // Get user's saved content by type
-async function getUserSavedContent(userId, profileId, type = null, limit = null) {
+async function getUserSavedContent(username, profileId, type = null, limit = null) {
     try {
         // Use real MongoDB function: find
-        const query = { userId, profileId };
+        const query = { username, profileId };
         if (type) {
             query.type = type;
         }
@@ -111,36 +111,36 @@ async function getUserSavedContent(userId, profileId, type = null, limit = null)
 }
 
 // Get user's liked content
-async function getUserLikedContent(userId, profileId, limit = null) {
+async function getUserLikedContent(username, profileId, limit = null) {
     try {
-        return await getUserSavedContent(userId, profileId, 'liked', limit);
+        return await getUserSavedContent(username, profileId, 'liked', limit);
     } catch (error) {
         throw new Error(`Failed to get liked content: ${error.message}`);
     }
 }
 
 // Get user's watchlist
-async function getUserWatchlist(userId, profileId, limit = null) {
+async function getUserWatchlist(username, profileId, limit = null) {
     try {
-        return await getUserSavedContent(userId, profileId, 'watchlist', limit);
+        return await getUserSavedContent(username, profileId, 'watchlist', limit);
     } catch (error) {
         throw new Error(`Failed to get watchlist: ${error.message}`);
     }
 }
 
 // Get user's bookmarked content
-async function getUserBookmarkedContent(userId, profileId, limit = null) {
+async function getUserBookmarkedContent(username, profileId, limit = null) {
     try {
-        return await getUserSavedContent(userId, profileId, 'bookmarked', limit);
+        return await getUserSavedContent(username, profileId, 'bookmarked', limit);
     } catch (error) {
         throw new Error(`Failed to get bookmarked content: ${error.message}`);
     }
 }
 
 // Get saved content with full content details (populated)
-async function getUserSavedContentWithDetails(userId, profileId, type = null) {
+async function getUserSavedContentWithDetails(username, profileId, type = null) {
     try {
-        const savedItems = await getUserSavedContent(userId, profileId, type);
+        const savedItems = await getUserSavedContent(username, profileId, type);
         
         // Note: Since we don't have a direct populate option, we'll need to manually fetch content details
         // This would require importing the Content model from the scripts or creating a proper content schema
@@ -159,11 +159,11 @@ async function getUserSavedContentWithDetails(userId, profileId, type = null) {
 }
 
 // Update saved content notes
-async function updateSavedContentNotes(userId, profileId, contentId, type, notes) {
+async function updateSavedContentNotes(username, profileId, contentId, type, notes) {
     try {
         // Use real MongoDB function: findOneAndUpdate
         const updatedItem = await SavedContent.findOneAndUpdate(
-            { userId, profileId, contentId, type },
+            { username, profileId, contentId, type },
             { $set: { notes: notes } },
             { new: true }
         );
@@ -179,10 +179,10 @@ async function updateSavedContentNotes(userId, profileId, contentId, type, notes
 }
 
 // Get saved content statistics for user profile
-async function getSavedContentStatistics(userId, profileId) {
+async function getSavedContentStatistics(username, profileId) {
     try {
         const stats = await SavedContent.aggregate([
-            { $match: { userId, profileId } },
+            { $match: { username, profileId } },
             {
                 $group: {
                     _id: '$type',
@@ -220,9 +220,9 @@ async function getSavedContentStatistics(userId, profileId) {
 }
 
 // Remove all saved content for a user profile
-async function clearUserSavedContent(userId, profileId, type = null) {
+async function clearUserSavedContent(username, profileId, type = null) {
     try {
-        const query = { userId, profileId };
+        const query = { username, profileId };
         if (type) {
             query.type = type;
         }

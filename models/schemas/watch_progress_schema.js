@@ -1,16 +1,14 @@
 const mongoose = require('mongoose');
 
 const watchProgressSchema = new mongoose.Schema({
-    userId: {
+    username: {
         type: String,
         required: true,
         index: true
     },
     profileId: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 5
+        type: String,
+        required: true
     },
     contentId: {
         type: Number,
@@ -54,15 +52,15 @@ const watchProgressSchema = new mongoose.Schema({
 }, {
     timestamps: true,
     indexes: [
-        { userId: 1, profileId: 1, contentId: 1, episodeId: 1 },
-        { userId: 1, profileId: 1, lastWatched: -1 },
+        { username: 1, profileId: 1, contentId: 1, episodeId: 1 },
+        { username: 1, profileId: 1, lastWatched: -1 },
         { contentId: 1, episodeId: 1 }
     ]
 });
 
 // Compound unique index to prevent duplicate progress entries
 watchProgressSchema.index(
-    { userId: 1, profileId: 1, contentId: 1, episodeId: 1 }, 
+    { username: 1, profileId: 1, contentId: 1, episodeId: 1 }, 
     { unique: true }
 );
 
@@ -76,9 +74,9 @@ watchProgressSchema.methods.calculateWatchPercentage = function() {
 };
 
 // Static method to find user's progress for specific content
-watchProgressSchema.statics.findUserProgress = function(userId, profileId, contentId, episodeId = 1) {
+watchProgressSchema.statics.findUserProgress = function(username, profileId, contentId, episodeId = 1) {
     return this.findOne({ 
-        userId, 
+        username, 
         profileId, 
         contentId, 
         episodeId 
@@ -86,9 +84,9 @@ watchProgressSchema.statics.findUserProgress = function(userId, profileId, conte
 };
 
 // Static method to get recent watch history
-watchProgressSchema.statics.getRecentHistory = function(userId, profileId, limit = 10) {
+watchProgressSchema.statics.getRecentHistory = function(username, profileId, limit = 10) {
     return this.find({ 
-        userId, 
+        username, 
         profileId,
         currentTime: { $gt: 120 } // Only show items watched for more than 2 minutes
     })

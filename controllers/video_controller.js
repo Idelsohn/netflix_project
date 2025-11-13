@@ -33,7 +33,7 @@ async function getWatchProgress(req, res) {
 
         const progress = await videoService.getWatchProgress(
             username, 
-            parseInt(profileId), 
+            profileId, 
             parseInt(contentId), 
             parseInt(episodeId) || 1
         );
@@ -72,8 +72,8 @@ async function saveWatchProgress(req, res) {
         }
 
         const progressData = {
-            userId: username,
-            profileId: parseInt(profileId),
+            username: username,
+            profileId: profileId,
             contentId: parseInt(contentId),
             episodeId: parseInt(episodeId) || 1,
             currentTime: parseFloat(currentTime),
@@ -111,7 +111,7 @@ async function markAsCompleted(req, res) {
 
         const progress = await videoService.markAsCompleted(
             username,
-            parseInt(profileId),
+            profileId,
             parseInt(contentId),
             parseInt(episodeId) || 1
         );
@@ -229,7 +229,7 @@ async function getRecentWatchHistory(req, res) {
 
         const history = await videoService.getRecentWatchHistory(
             username, 
-            parseInt(profileId), 
+            profileId, 
             parseInt(limit) || 10
         );
 
@@ -252,7 +252,7 @@ async function getContentProgress(req, res) {
 
         const progress = await videoService.getContentProgress(
             username, 
-            parseInt(profileId), 
+            profileId, 
             parseInt(contentId)
         );
 
@@ -310,7 +310,7 @@ async function getWatchStatistics(req, res) {
 
         const stats = await videoService.getWatchStatistics(
             username, 
-            parseInt(profileId)
+            profileId
         );
 
         res.status(200).json({ statistics: stats });

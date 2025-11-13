@@ -121,7 +121,8 @@ videoSourcesSchema.methods.validateUrl = function() {
     const urlPatterns = {
         youtube: /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/).+$/,
         vimeo: /^(https?:\/\/)?(www\.)?vimeo\.com\/[0-9]+$/,
-        direct_mp4: /^https?:\/\/.+\.(mp4|webm|ogg)(\?.*)?$/i,
+        // Updated to accept both absolute URLs and relative paths
+        direct_mp4: /^(https?:\/\/.+\.(mp4|webm|ogg)(\?.*)?|.+\.(mp4|webm|ogg))$/i,
         google_cloud: /^https:\/\/commondatastorage\.googleapis\.com\/.+$/
     };
     

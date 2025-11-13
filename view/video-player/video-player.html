@@ -48,14 +48,14 @@
                         <span class="play-icon">▶</span>
                         <span class="pause-icon hidden">⏸</span>
                     </button>
-                    <button id="backwardBtn" class="control-btn skip-btn">
+                    <button id="skipBackBtn" class="control-btn skip-btn">
                         <span>⏪ 10s</span>
                     </button>
-                    <button id="forwardBtn" class="control-btn skip-btn">
+                    <button id="skipForwardBtn" class="control-btn skip-btn">
                         <span>10s ⏩</span>
                     </button>
                     <div class="volume-control">
-                        <button id="muteBtn" class="control-btn volume-btn">
+                        <button id="volumeBtn" class="control-btn volume-btn">
                             <span class="volume-on">🔊</span>
                             <span class="volume-off hidden">🔇</span>
                         </button>
@@ -64,20 +64,21 @@
                         </div>
                     </div>
                     <div class="time-display">
-                        <span id="currentTime">0:00</span>
+                        <span id="timeDisplay">0:00</span>
                         <span class="time-separator">/</span>
-                        <span id="totalTime">0:00</span>
+                        <span id="durationDisplay">0:00</span>
                     </div>
                 </div>
 
                 <!-- Center Timeline -->
                 <div class="controls-center">
                     <div class="timeline-container">
-                        <div class="timeline-track">
-                            <div id="progressBar" class="progress-bar"></div>
+                        <div id="progressBar" class="timeline-track">
+                            <div id="progressFilled" class="progress-bar"></div>
                             <div id="bufferBar" class="buffer-bar"></div>
                             <input type="range" id="timeline" class="timeline-slider" min="0" max="100" value="0">
                             <div id="timelineThumb" class="timeline-thumb"></div>
+                            <div id="progressPreview" class="progress-preview hidden">0:00</div>
                         </div>
                     </div>
                 </div>
@@ -95,24 +96,71 @@
                             <div class="speed-option" data-speed="2">2x</div>
                         </div>
                     </div>
+                    <button id="settingsBtn" class="control-btn settings-btn">⚙️</button>
                     <button id="pictureInPictureBtn" class="control-btn pip-btn">📺</button>
                     <button id="episodeListBtn" class="control-btn episodes-btn">📋</button>
-                    <button id="nextEpisodeBtn" class="control-btn next-episode-btn">Next Episode</button>
+                    <button id="nextEpisodeBtn" class="control-btn next-episode-btn hidden">Next Episode</button>
                     <button id="fullscreenBtn" class="control-btn fullscreen-btn">⛶</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="settings-panel hidden">
+            <div class="settings-header">
+                <h4>Settings</h4>
+            </div>
+            <div class="settings-content">
+                <div class="setting-group">
+                    <label for="qualitySelect">Quality</label>
+                    <select id="qualitySelect" class="setting-select">
+                        <option value="auto">Auto</option>
+                        <option value="1080p">1080p</option>
+                        <option value="720p" selected>720p</option>
+                        <option value="480p">480p</option>
+                        <option value="360p">360p</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="speedSelect">Playback Speed</label>
+                    <select id="speedSelect" class="setting-select">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="subtitleSelect">Subtitles</label>
+                    <select id="subtitleSelect" class="setting-select">
+                        <option value="none" selected>Off</option>
+                    </select>
                 </div>
             </div>
         </div>
 
         <!-- Episode Drawer -->
         <div id="episodeDrawer" class="episode-drawer hidden">
-            <div class="drawer-header">
-                <h3>Episodes</h3>
-                <button id="closeDrawer" class="close-drawer-btn">×</button>
-            </div>
-            <div id="episodeList" class="episode-list">
-                <!-- Episodes will be loaded dynamically -->
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <div class="drawer-title-section">
+                        <h3 id="seriesTitle">Episodes</h3>
+                        <span id="episodeCounter" class="episode-counter"></span>
+                    </div>
+                    <button id="closeDrawer" class="close-drawer-btn">×</button>
+                </div>
+                <div class="current-episode-info">
+                    <h4 id="currentEpisodeTitle"></h4>
+                    <p id="currentEpisodeDescription"></p>
+                </div>
+                <div id="episodeList" class="episode-list">
+                    <!-- Episodes will be loaded dynamically -->
+                </div>
             </div>
         </div>
+        <div class="drawer-overlay hidden"></div>
 
         <!-- Error Message -->
         <div id="errorMessage" class="error-message hidden">
@@ -128,6 +176,28 @@
         <div id="bufferingIndicator" class="buffering-indicator hidden">
             <div class="spinner"></div>
             <div class="buffering-text">Buffering...</div>
+        </div>
+        <!-- Skip Feedback -->
+        <div id="skipFeedback" class="skip-feedback hidden">
+            <span class="skip-icon"></span>
+            <span class="skip-text"></span>
+        </div>
+
+        <!-- Next Episode Countdown -->
+        <div id="nextEpisodeCountdown" class="next-episode-countdown hidden">
+            <div class="countdown-content">
+                <h4>Next Episode</h4>
+                <p class="next-episode-title"></p>
+                <div class="countdown-timer-container">
+                    <span>Playing in </span>
+                    <span class="countdown-timer">10</span>
+                    <span> seconds</span>
+                </div>
+                <div class="countdown-actions">
+                    <button class="play-next-now">Play Now</button>
+                    <button class="cancel-autoplay">Cancel</button>
+                </div>
+            </div>
         </div>
     </div>
 

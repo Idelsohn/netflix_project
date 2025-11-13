@@ -276,14 +276,15 @@ class VideoControls {
     }
 
     updateVolumeIcon(volume) {
-        const volumeIcon = this.volumeBtn.querySelector('svg use');
+        const volumeOn = this.volumeBtn.querySelector('.volume-on');
+        const volumeOff = this.volumeBtn.querySelector('.volume-off');
         
         if (this.player.isMuted() || volume === 0) {
-            volumeIcon.setAttribute('href', '#volume-muted');
-        } else if (volume < 0.5) {
-            volumeIcon.setAttribute('href', '#volume-low');
+            volumeOn.classList.add('hidden');
+            volumeOff.classList.remove('hidden');
         } else {
-            volumeIcon.setAttribute('href', '#volume-high');
+            volumeOn.classList.remove('hidden');
+            volumeOff.classList.add('hidden');
         }
     }
 
@@ -292,14 +293,13 @@ class VideoControls {
     }
 
     updateFullscreenButton() {
-        const fullscreenIcon = this.fullscreenBtn.querySelector('svg use');
-        
+        // Update button title based on fullscreen state
         if (this.player.isFullscreen) {
-            fullscreenIcon.setAttribute('href', '#fullscreen-exit');
             this.fullscreenBtn.setAttribute('title', 'Exit Fullscreen (F)');
+            this.fullscreenBtn.textContent = '⛶';
         } else {
-            fullscreenIcon.setAttribute('href', '#fullscreen');
             this.fullscreenBtn.setAttribute('title', 'Fullscreen (F)');
+            this.fullscreenBtn.textContent = '⛶';
         }
     }
 
@@ -487,3 +487,6 @@ class VideoControls {
         });
     }
 }
+
+// Export the class
+export { VideoControls };

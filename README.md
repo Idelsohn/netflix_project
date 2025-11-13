@@ -64,28 +64,6 @@ ex_1_web_dev/
 
 ## Technical Implementation
 
-### Data Structure
-```javascript
-// Content catalog
-const contentCatalog = [
-  {
-    id: 1,
-    name: "Stranger Things",
-    year: 2016,
-    genre: "Sci-Fi", 
-    likes: 1250,
-    type: "series"
-  }
-  // ... more content
-];
-
-// Profiles data
-const profiles = [
-  { id: 1, name: "Yahav", image: "images/profile picture 1.jfif" }
-  // ... more profiles
-];
-```
-
 ### localStorage Management
 - **Authentication state**: User login status and email
 - **Selected profile**: Current profile ID and name

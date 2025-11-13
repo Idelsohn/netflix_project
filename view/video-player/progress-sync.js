@@ -1,6 +1,9 @@
 // Progress Synchronization Component
+import { APIUsage } from '../APIUsage.js';
+
 class ProgressSync {
     constructor(videoPlayer) {
+        this.apiUsage = new APIUsage();
         this.player = videoPlayer;
         this.video = videoPlayer.video;
         
@@ -182,15 +185,7 @@ class ProgressSync {
     }
 
     async sendProgressUpdate(progressData) {
-        const response = await fetch('/api/video/update-progress', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify(progressData)
-        });
-
+        const response = await this.apiUsage.sendProgressUpdate(progressData);
         if (!response.ok) {
             throw new Error(`Progress sync failed: ${response.status}`);
         }
@@ -261,14 +256,7 @@ class ProgressSync {
         };
 
         try {
-            await fetch('/api/video/mark-completed', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify(completionData)
-            });
+            await this.apiUsage.markAsCompleted(completionData);
 
             // Update local cache
             this.updateLocalProgress(completionData);
@@ -281,11 +269,7 @@ class ProgressSync {
 
     async loadSavedProgress() {
         try {
-            const response = await fetch(
-                `/api/video/progress/${this.player.currentContentId}/${this.player.currentEpisodeId}?profileId=${this.player.currentProfileId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.loadSavedProgress(this.player.currentContentId, this.player.currentEpisodeId, this.player.currentProfileId);
             if (response.ok) {
                 const data = await response.json();
                 return data.progress;
@@ -299,11 +283,7 @@ class ProgressSync {
 
     async loadAllProgress(contentId) {
         try {
-            const response = await fetch(
-                `/api/video/progress-all/${contentId}?profileId=${this.player.currentProfileId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.loadAllProgress(contentId, this.player.currentProfileId);
             if (response.ok) {
                 const data = await response.json();
                 
@@ -343,11 +323,7 @@ class ProgressSync {
             const lastSyncTime = localStorage.getItem('lastProgressSync');
             const params = lastSyncTime ? `?since=${lastSyncTime}` : '';
             
-            const response = await fetch(
-                `/api/video/progress-updates/${this.player.currentProfileId}${params}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.checkForRemoteUpdates(this.player.currentProfileId, params);
             if (response.ok) {
                 const data = await response.json();
                 
@@ -427,14 +403,7 @@ class ProgressSync {
         };
 
         try {
-            await fetch('/api/video/update-stats', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify(statsData)
-            });
+            await this.apiUsage.updateViewingStats(statsData);
         } catch (error) {
             console.error('Failed to update viewing stats:', error);
         }

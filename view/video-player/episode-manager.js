@@ -1,6 +1,9 @@
 // Episode Manager Component
+import { APIUsage } from '../APIUsage.js';
+
 class EpisodeManager {
     constructor(videoPlayer) {
+        this.apiUsage = new APIUsage();
         this.player = videoPlayer;
         this.isDrawerOpen = false;
         this.episodes = [];
@@ -50,11 +53,7 @@ class EpisodeManager {
 
     async loadEpisodes(contentId) {
         try {
-            const response = await fetch(
-                `/api/video/episodes/${contentId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.loadEpisodes(contentId);
             if (response.ok) {
                 const data = await response.json();
                 this.episodes = data.episodes || [];
@@ -80,11 +79,7 @@ class EpisodeManager {
 
     async loadSeriesInfo(contentId) {
         try {
-            const response = await fetch(
-                `/api/video/series/${contentId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.loadSeriesInfo(contentId);
             if (response.ok) {
                 const data = await response.json();
                 this.seriesInfo = data.series;
@@ -337,11 +332,7 @@ class EpisodeManager {
 
     async loadAllEpisodesProgress() {
         try {
-            const response = await fetch(
-                `/api/video/progress-batch/${this.player.currentContentId}?profileId=${this.player.currentProfileId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.loadAllEpisodesProgress(this.player.currentContentId, this.player.currentProfileId);
             if (response.ok) {
                 const data = await response.json();
                 this.player.episodeProgressCache = {};

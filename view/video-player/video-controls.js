@@ -1,6 +1,9 @@
 // Video Controls Component
+import { APIUsage } from '../APIUsage.js';
+
 class VideoControls {
     constructor(videoPlayer) {
+        this.apiUsage = new APIUsage();
         this.player = videoPlayer;
         this.video = videoPlayer.video;
         this.isDraggingProgress = false;
@@ -343,11 +346,7 @@ class VideoControls {
             const wasPaused = this.video.paused;
             
             // Get new quality source
-            const response = await fetch(
-                `/api/video/source/quality/${this.player.currentContentId}/${this.player.currentEpisodeId}?quality=${quality}&profileId=${this.player.currentProfileId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.changeVideoQuality(this.player.currentContentId, this.player.currentEpisodeId, this.player.currentProfileId, quality);
             if (response.ok) {
                 const data = await response.json();
                 
@@ -424,11 +423,7 @@ class VideoControls {
     // Load available qualities for settings
     async loadAvailableQualities() {
         try {
-            const response = await fetch(
-                `/api/video/qualities/${this.player.currentContentId}/${this.player.currentEpisodeId}`,
-                { credentials: 'include' }
-            );
-
+            const response = await this.apiUsage.loadAvailableQualities(this.player.currentContentId, this.player.currentEpisodeId);
             if (response.ok) {
                 const data = await response.json();
                 this.populateQualitySelect(data.qualities);

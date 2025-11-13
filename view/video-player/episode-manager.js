@@ -450,3 +450,6 @@ class EpisodeManager {
         }, seconds * 1000 + 500);
     }
 }
+
+// Export the class
+export { EpisodeManager };

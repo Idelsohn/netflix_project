@@ -456,3 +456,6 @@ class ProgressSync {
         return this.isActive;
     }
 }
+
+// Export the class
+export { ProgressSync };

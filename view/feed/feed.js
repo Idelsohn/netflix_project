@@ -284,7 +284,6 @@ class FeedManager {
         this.clearSearch();
         
         // Reload content with new category filtering
-        this.loadContent();
         this.updateCategoryFeedback(category);
     }
 
@@ -316,6 +315,7 @@ class FeedManager {
         this.createHeroSection();
 
         // Create category rows
+        console.log(contentSection)
         await this.createCategoryRows(contentSection);
     }
 

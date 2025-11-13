@@ -8,6 +8,7 @@ const profileRoutes = require("./routes/api/profile_routes.js");
 const videoRoutes = require("./routes/api/video_routes.js");
 const savedContentRoutes = require("./routes/api/saved_content_routes.js");
 const contentCatalogRoutes = require("./routes/api/content_catalog_routes.js");
+const logsRoutes = require("./routes/api/log_routes.js");
 
 dotenv.config(); // load environment variables
 const app = express(); // create express app
@@ -40,6 +41,7 @@ app.use("/api/profiles", profileRoutes);
 app.use("/api/video", videoRoutes);
 app.use("/api/saved-content", savedContentRoutes);
 app.use("/api/content-catalog", contentCatalogRoutes);
+app.use("/api/logs", logsRoutes);
 
 // start the server
 const PORT = process.env.SERVER_PORT;

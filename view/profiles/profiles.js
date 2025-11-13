@@ -224,6 +224,10 @@ class ProfileManagement {
             const res = await this.apiUsage.deleteProfile(this.currentUsername, profile_name);
         }
         else if (selection === "new-profile") {
+            if (this.curentUserProfiles.length >= 5) {
+                this.showNotification('Cannot add more than 5 profiles', 'error');
+                return;
+            }
             if (currentProfile){
                 this.showNotification('Profile with this name already exist', 'error');
                 return;

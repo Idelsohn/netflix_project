@@ -20,6 +20,15 @@ async function getProfile(req, res) {
     }
 }
 
+async function getProfileByID(req, res) {
+    try {
+        const profile = await profileService.getSpecificProfileByID(req.query.id);
+        res.status(200).json(profile);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
 async function createProfile(req, res) {
     try {
         await profileService.createProfile(req.body);
@@ -57,6 +66,7 @@ async function deleteProfile(req, res) {
 module.exports = {
     getAllProfiles,
     getProfile,
+    getProfileByID,
     createProfile,
     updateProfile,
     deleteProfile

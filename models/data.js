@@ -383,32 +383,3 @@ const videoContent = [
         ]
     }
 ];
-
-// Profiles data - predefined array as required
-const profiles = [
-    { 
-        id: 1, 
-        name: "Yahav", 
-        image: "../../images/profile_pictures/profile_picture_1.jfif"
-    },
-    { 
-        id: 2, 
-        name: "Nadav", 
-        image: "../../images/profile_pictures/profile_picture_2.jfif"
-    },
-    { 
-        id: 3, 
-        name: "Roe", 
-        image: "../../images/profile_pictures/profile_picture_3.jfif"
-    },
-    { 
-        id: 4, 
-        name: "Amit", 
-        image: "../../images/profile_pictures/profile_picture_4.jfif"
-    },
-    { 
-        id: 5, 
-        name: "Or", 
-        image: "../../images/profile_pictures/profile_picture_5.jfif"
-    }
-];

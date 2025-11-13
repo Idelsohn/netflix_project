@@ -66,15 +66,15 @@ class FeedManager {
         }
     }
 
-    updateProfilePicture() {
+    async updateProfilePicture() {
         const selectedProfileId = localStorage.getItem('selectedProfileId');
         const profileIcon = document.querySelector('.profile-icon');
         
         if (selectedProfileId && profileIcon) {
-            const profile = profiles.find(p => p.id == selectedProfileId);
+            const profile = await this.apiUsage.getProfileByID(selectedProfileId);
             if (profile) {
-                profileIcon.src = profile.image;
-                profileIcon.alt = `${profile.name} Profile`;
+                profileIcon.src = "../../" + profile.image;
+                profileIcon.alt = `${profile.profile_name} Profile`;
             }
         }
     }

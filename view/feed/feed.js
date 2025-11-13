@@ -315,7 +315,6 @@ class FeedManager {
         this.createHeroSection();
 
         // Create category rows
-        console.log(contentSection)
         await this.createCategoryRows(contentSection);
     }
 

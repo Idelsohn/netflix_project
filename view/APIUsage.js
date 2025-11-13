@@ -40,6 +40,7 @@ export class APIUsage {
             },
             body: JSON.stringify({ username, email, password })
         });
+        await this.createLog(`User created. username: ${username}`);
         return res.json();
     }
 
@@ -100,6 +101,7 @@ export class APIUsage {
             credentials: 'include',
             body: JSON.stringify({ username, profile_name: profileName, image: avatarUrl })
         });
+        await this.createLog(`Profile of user '${username}' created. profile name: ${profileName}`);
         return res.json();
     }
 
@@ -115,6 +117,7 @@ export class APIUsage {
                 image: newImageUrl
             })
         });
+        await this.createLog(`Profile of user '${username}' updated. Old profile name: ${profileName}, New profile name: ${newProfileName}`);
         return res.json();
     }
 
@@ -125,6 +128,7 @@ export class APIUsage {
             credentials: 'include',
             body: JSON.stringify({ username, profile_name: profileName })
         });
+        await this.createLog(`Profile of user '${username}' deleted. profile name: ${profileName}`);
         return res.json();
     }
 
@@ -301,5 +305,16 @@ export class APIUsage {
             credentials: 'include' 
         });
         return res;
+    }
+
+    // ---------- Log Creation API method ----------
+    async createLog(message) {
+        const res = await fetch(this.baseURL + "/logs/create", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ message })
+        });
+        return res.json();
     }
 }

@@ -25,6 +25,9 @@ app.use(
 app.use(express.json()); // middleware to parse JSON bodies
 app.use(cookieParser()); // enables req.cookies
 
+// Serve static video files
+app.use('/videos', express.static('videos'));
+
 // connect to MongoDB
 mongoose.connect(
     process.env.MONGO_ADDRESS + "/" + process.env.MONGO_DB_NAME, 

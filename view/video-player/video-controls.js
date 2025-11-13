@@ -350,8 +350,8 @@ class VideoControls {
             if (response.ok) {
                 const data = await response.json();
                 
-                // Update video source
-                this.video.src = data.source.videoUrl;
+                // Update video source - add relative path prefix for local files
+                this.video.src = `../../${data.source.videoUrl}`;
                 this.video.load();
                 
                 // Restore position and play state

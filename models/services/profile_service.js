@@ -11,9 +11,17 @@ async function getProfilesByUser(username) {
 
 async function getSpecificProfileOfUser(username, profile_name) {
     if (!username || !profile_name) {
-        throw new Error('username is required');
+        throw new Error('username and profile name are required');
     }
     const profile = await Profile.findOne({ username, profile_name });
+    return profile;
+}
+
+async function getSpecificProfileByID(profileID) {
+    if (!profileID) {
+        throw new Error('profile ID is required');
+    }
+    const profile = await Profile.findOne({ _id: profileID });
     return profile;
 }
 
@@ -41,6 +49,7 @@ async function deleteProfile(username, profileName) {
 module.exports = {
     getProfilesByUser,
     getSpecificProfileOfUser,
+    getSpecificProfileByID,
     createProfile,
     updateProfile,
     deleteProfile,

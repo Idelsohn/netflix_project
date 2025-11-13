@@ -4,6 +4,7 @@ const profileController = require('../../controllers/profile_controller');
 
 router.get('/all', profileController.getAllProfiles); // Get all users' profiles
 router.get('/my_profile', profileController.getProfile);
+router.get('/my_profile_by_id', profileController.getProfileByID);
 router.post('/create', profileController.createProfile); // Create a new user profile
 router.put('/update', profileController.updateProfile); // Update profile name
 router.delete('/delete', profileController.deleteProfile); // Delete a users' profile

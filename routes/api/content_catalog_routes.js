@@ -4,7 +4,7 @@ const contentCatalogController = require('../../controllers/content_catalog_cont
 
 router.get('/all', contentCatalogController.getAllContentCatalog);
 // router.post('/create', contentCatalogController.createContent);
-// router.put('/update', contentCatalogController.updateContent);
+router.put('/update-likes', contentCatalogController.updateLikesOfContent);
 // router.delete('/delete', contentCatalogController.deleteContent);
 
 module.exports = router;

@@ -5,6 +5,14 @@ async function getAllContentCatalog() {
     return contentCatalog;
 }
 
+async function updateLikesOfContent(id, updatedData){
+    return await ContentCatalog.updateOne(
+        { id }, 
+        { $set: updatedData }
+    );
+}
+
 module.exports = {
-    getAllContentCatalog
+    getAllContentCatalog,
+    updateLikesOfContent
 };

@@ -284,7 +284,6 @@ class FeedManager {
         this.clearSearch();
         
         // Reload content with new category filtering
-        this.loadContent();
         this.updateCategoryFeedback(category);
     }
 
@@ -316,6 +315,7 @@ class FeedManager {
         this.createHeroSection();
 
         // Create category rows
+        console.log(contentSection)
         await this.createCategoryRows(contentSection);
     }
 
@@ -355,25 +355,6 @@ class FeedManager {
                 container.appendChild(myListSection);
                 return;
             }
-        } else if (this.activeCategory.toLowerCase() === 'browse by languages') {
-            // Show empty state message for Browse by Languages
-            const emptyMessage = document.createElement('div');
-            emptyMessage.className = 'empty-category-message';
-            emptyMessage.style.cssText = `
-                text-align: center;
-                padding: 60px 20px;
-                color: #b3b3b3;
-            `;
-            emptyMessage.innerHTML = `
-                <h2 style="font-size: 32px; margin-bottom: 15px; color: white;">
-                    No Content Available
-                </h2>
-                <p style="font-size: 18px; color: #999;">
-                    Content will be added in the future
-                </p>
-            `;
-            container.appendChild(emptyMessage);
-            return;
         }
 
         // Get content based on active category (navbar filtering)
@@ -490,7 +471,6 @@ class FeedManager {
                 }
             });
         } else {
-            // Use original popularity-based categories for other pages (Games, etc.)
             const categories = [
                 { name: 'Popular', filter: (content) => content.likes > 1000 },
                 { name: 'Recently Added', filter: (content) => content.year >= 2020 },
@@ -1023,8 +1003,6 @@ class FeedManager {
                 return this.currentContent.filter(content => content.type === 'movie');
             case 'tv shows':
                 return this.currentContent.filter(content => content.type === 'series');
-            case 'games':
-                return [];
             case 'new & popular':
                 return this.currentContent
                     .filter(content => content.year >= 2018)
@@ -1032,8 +1010,6 @@ class FeedManager {
             case 'my list':
                 const userList = JSON.parse(localStorage.getItem('userList') || '[]');
                 return this.currentContent.filter(content => userList.includes(content.id));
-            case 'browse by languages':
-                return await this.apiUsage.getContentCatalog();
             default:
                 return await this.apiUsage.getContentCatalog();
         }

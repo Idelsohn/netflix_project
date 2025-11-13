@@ -5,6 +5,11 @@ async function getAllContentCatalog() {
     return contentCatalog;
 }
 
+async function createContent(data) {
+    const content = new ContentCatalog(data);
+    return await content.save();
+}
+
 async function updateLikesOfContent(id, updatedData){
     return await ContentCatalog.updateOne(
         { id }, 
@@ -12,7 +17,13 @@ async function updateLikesOfContent(id, updatedData){
     );
 }
 
+async function deleteContent(id) {
+    return await ContentCatalog.findOneAndDelete({ id });
+}
+
 module.exports = {
     getAllContentCatalog,
-    updateLikesOfContent
+    createContent,
+    updateLikesOfContent,
+    deleteContent
 };

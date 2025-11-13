@@ -17,6 +17,7 @@ class VideoPlayer {
         this.lastSavedTime = 0;
         this.videoSource = null;
         this.episodes = [];
+        this.contentInfo = null;
         this.isInitialized = false;
         
         // Initialize when DOM is ready
@@ -109,12 +110,26 @@ class VideoPlayer {
             this.video.src = `../../${this.videoSource.videoUrl}`;
             this.video.preload = 'metadata';
 
+            // Load content info for thumbnail
+            await this.loadContentInfo();
+
             // Load episodes list
             await this.loadEpisodes();
 
         } catch (error) {
             console.error('Failed to load video content:', error);
             throw error;
+        }
+    }
+
+    async loadContentInfo() {
+        try {
+            const response = await this.apiUsage.getContentCatalog();
+            if (response.success && response.data) {
+                this.contentInfo = response.data.find(item => item.id === this.currentContentId);
+            }
+        } catch (error) {
+            console.error('Failed to load content info:', error);
         }
     }
 
@@ -133,13 +148,17 @@ class VideoPlayer {
 
     async checkPreviousProgress() {
         try {
-            const response = this.apiUsage.checkPreviousProgress(this.currentContentId, this.currentEpisodeId, this.currentProfileId);
+            const response = await this.apiUsage.checkPreviousProgress(this.currentContentId, this.currentEpisodeId, this.currentProfileId);
             if (response.ok) {
                 const data = await response.json();
                 const progress = data.progress;
 
                 if (progress && progress.currentTime > 30) { // Show modal if watched more than 30 seconds
                     this.showContinueModal(progress.currentTime);
+                } else if (progress && progress.currentTime > 0) {
+                    // Auto-resume if less than 30 seconds
+                    this.video.currentTime = progress.currentTime;
+                    this.startPlayback();
                 } else {
                     this.startPlayback();
                 }

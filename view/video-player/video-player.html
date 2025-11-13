@@ -85,58 +85,9 @@
 
                 <!-- Right Controls -->
                 <div class="controls-right">
-                    <div class="playback-speed">
-                        <button id="speedBtn" class="control-btn speed-btn">1x</button>
-                        <div id="speedMenu" class="speed-menu hidden">
-                            <div class="speed-option" data-speed="0.5">0.5x</div>
-                            <div class="speed-option" data-speed="0.75">0.75x</div>
-                            <div class="speed-option active" data-speed="1">1x</div>
-                            <div class="speed-option" data-speed="1.25">1.25x</div>
-                            <div class="speed-option" data-speed="1.5">1.5x</div>
-                            <div class="speed-option" data-speed="2">2x</div>
-                        </div>
-                    </div>
-                    <button id="settingsBtn" class="control-btn settings-btn">⚙️</button>
-                    <button id="pictureInPictureBtn" class="control-btn pip-btn">📺</button>
                     <button id="episodeListBtn" class="control-btn episodes-btn">📋</button>
                     <button id="nextEpisodeBtn" class="control-btn next-episode-btn hidden">Next Episode</button>
                     <button id="fullscreenBtn" class="control-btn fullscreen-btn">⛶</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Panel -->
-        <div id="settingsPanel" class="settings-panel hidden">
-            <div class="settings-header">
-                <h4>Settings</h4>
-            </div>
-            <div class="settings-content">
-                <div class="setting-group">
-                    <label for="qualitySelect">Quality</label>
-                    <select id="qualitySelect" class="setting-select">
-                        <option value="auto">Auto</option>
-                        <option value="1080p">1080p</option>
-                        <option value="720p" selected>720p</option>
-                        <option value="480p">480p</option>
-                        <option value="360p">360p</option>
-                    </select>
-                </div>
-                <div class="setting-group">
-                    <label for="speedSelect">Playback Speed</label>
-                    <select id="speedSelect" class="setting-select">
-                        <option value="0.5">0.5x</option>
-                        <option value="0.75">0.75x</option>
-                        <option value="1" selected>1x</option>
-                        <option value="1.25">1.25x</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="2">2x</option>
-                    </select>
-                </div>
-                <div class="setting-group">
-                    <label for="subtitleSelect">Subtitles</label>
-                    <select id="subtitleSelect" class="setting-select">
-                        <option value="none" selected>Off</option>
-                    </select>
                 </div>
             </div>
         </div>
@@ -152,8 +103,13 @@
                     <button id="closeDrawer" class="close-drawer-btn">×</button>
                 </div>
                 <div class="current-episode-info">
-                    <h4 id="currentEpisodeTitle"></h4>
-                    <p id="currentEpisodeDescription"></p>
+                    <div class="current-episode-thumbnail">
+                        <img id="currentEpisodeThumbnail" src="" alt="Current Episode">
+                    </div>
+                    <div class="current-episode-details">
+                        <h4 id="currentEpisodeTitle"></h4>
+                        <p id="currentEpisodeDescription"></p>
+                    </div>
                 </div>
                 <div id="episodeList" class="episode-list">
                     <!-- Episodes will be loaded dynamically -->

@@ -22,23 +22,15 @@ class VideoControls {
         this.fullscreenBtn = document.getElementById('fullscreenBtn');
         this.nextEpisodeBtn = document.getElementById('nextEpisodeBtn');
         this.episodeListBtn = document.getElementById('episodeListBtn');
-        this.settingsBtn = document.getElementById('settingsBtn');
         
         this.progressBar = document.getElementById('progressBar');
         this.progressFilled = document.getElementById('progressFilled');
         this.timeDisplay = document.getElementById('timeDisplay');
         this.durationDisplay = document.getElementById('durationDisplay');
 
-        // Settings panel
-        this.settingsPanel = document.getElementById('settingsPanel');
-        this.qualitySelect = document.getElementById('qualitySelect');
-        this.speedSelect = document.getElementById('speedSelect');
-        this.subtitleSelect = document.getElementById('subtitleSelect');
-
         this.setupControlEvents();
         this.setupProgressBar();
         this.setupVolumeControl();
-        this.setupSettingsPanel();
     }
 
     setupControlEvents() {
@@ -76,11 +68,6 @@ class VideoControls {
         // Episode list button
         this.episodeListBtn.addEventListener('click', () => {
             this.player.episodeManager.toggleEpisodeDrawer();
-        });
-
-        // Settings button
-        this.settingsBtn.addEventListener('click', () => {
-            this.toggleSettingsPanel();
         });
     }
 
@@ -303,86 +290,6 @@ class VideoControls {
         }
     }
 
-    setupSettingsPanel() {
-        // Quality settings
-        this.qualitySelect.addEventListener('change', (e) => {
-            const quality = e.target.value;
-            this.changeVideoQuality(quality);
-        });
-
-        // Speed settings
-        this.speedSelect.addEventListener('change', (e) => {
-            const speed = parseFloat(e.target.value);
-            this.player.setPlaybackSpeed(speed);
-        });
-
-        // Subtitle settings
-        this.subtitleSelect.addEventListener('change', (e) => {
-            const subtitleTrack = e.target.value;
-            this.changeSubtitles(subtitleTrack);
-        });
-
-        // Close settings when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!this.settingsPanel.contains(e.target) && !this.settingsBtn.contains(e.target)) {
-                this.closeSettingsPanel();
-            }
-        });
-    }
-
-    toggleSettingsPanel() {
-        this.settingsPanel.classList.toggle('hidden');
-    }
-
-    closeSettingsPanel() {
-        this.settingsPanel.classList.add('hidden');
-    }
-
-    async changeVideoQuality(quality) {
-        if (!this.player.videoSource) return;
-
-        try {
-            const currentTime = this.video.currentTime;
-            const wasPaused = this.video.paused;
-            
-            // Get new quality source
-            const response = await this.apiUsage.changeVideoQuality(this.player.currentContentId, this.player.currentEpisodeId, this.player.currentProfileId, quality);
-            if (response.ok) {
-                const data = await response.json();
-                
-                // Update video source - add relative path prefix for local files
-                this.video.src = `../../${data.source.videoUrl}`;
-                this.video.load();
-                
-                // Restore position and play state
-                this.video.addEventListener('loadedmetadata', () => {
-                    this.video.currentTime = currentTime;
-                    if (!wasPaused) {
-                        this.video.play();
-                    }
-                }, { once: true });
-                
-                this.player.videoSource = data.source;
-            }
-        } catch (error) {
-            console.error('Failed to change video quality:', error);
-        }
-    }
-
-    changeSubtitles(trackId) {
-        const tracks = this.video.textTracks;
-        
-        // Disable all tracks
-        for (let i = 0; i < tracks.length; i++) {
-            tracks[i].mode = 'disabled';
-        }
-        
-        // Enable selected track
-        if (trackId !== 'none' && tracks[trackId]) {
-            tracks[trackId].mode = 'showing';
-        }
-    }
-
     showSkipFeedback(direction) {
         const feedback = document.getElementById('skipFeedback');
         const icon = feedback.querySelector('.skip-icon');
@@ -418,35 +325,6 @@ class VideoControls {
         } else {
             this.nextEpisodeBtn.classList.add('hidden');
         }
-    }
-
-    // Load available qualities for settings
-    async loadAvailableQualities() {
-        try {
-            const response = await this.apiUsage.loadAvailableQualities(this.player.currentContentId, this.player.currentEpisodeId);
-            if (response.ok) {
-                const data = await response.json();
-                this.populateQualitySelect(data.qualities);
-            }
-        } catch (error) {
-            console.error('Failed to load qualities:', error);
-        }
-    }
-
-    populateQualitySelect(qualities) {
-        this.qualitySelect.innerHTML = '';
-        
-        qualities.forEach(quality => {
-            const option = document.createElement('option');
-            option.value = quality.quality;
-            option.textContent = `${quality.quality}p`;
-            
-            if (quality.quality === this.player.videoSource?.quality) {
-                option.selected = true;
-            }
-            
-            this.qualitySelect.appendChild(option);
-        });
     }
 
     // Mobile touch gestures

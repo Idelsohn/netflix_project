@@ -5,6 +5,7 @@ const videoController = require('../../controllers/video_controller');
 // Watch Progress Routes
 router.get('/progress/:contentId/:episodeId', videoController.getWatchProgress);
 router.post('/progress', videoController.saveWatchProgress);
+router.put('/update-progress', videoController.saveWatchProgress); // Add PUT route for progress updates
 router.post('/mark-completed', videoController.markAsCompleted);
 router.get('/progress/content/:contentId', videoController.getContentProgress);
 
